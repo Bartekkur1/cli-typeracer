@@ -12,7 +12,7 @@ func createMainMenuDialog() util.PickMenu {
 	}, Pick: 0}
 }
 
-func RunMainMenu(engine *types.Engine) {
+func PrintMainMenu(engine *types.Engine) {
 	var menuDialog = createMainMenuDialog()
 	var pick = util.RunMenu(&menuDialog)
 	if pick == 1 {

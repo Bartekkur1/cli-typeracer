@@ -27,6 +27,13 @@ func PrintJoinGame(engine *types.Engine) {
 			break
 		}
 
+		if key == keyboard.KeyEnter {
+			util.ClearConsole()
+			fmt.Printf("Joining game %s...", input)
+			engine.GameState = types.Exit
+			break
+		}
+
 		if char != 0 {
 			fmt.Print(string(char))
 			input += string(char)
