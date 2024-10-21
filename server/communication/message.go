@@ -14,6 +14,10 @@ const (
 	Error        Command = "ERROR"
 	Unrecognized Command = "UNRECOGNIZED"
 	Welcome      Command = "WELCOME"
+	CreateGame   Command = "CREATE_GAME"
+	GameCreated  Command = "GAME_CREATED"
+	JoinGame     Command = "JOIN_GAME"
+	GameJoined   Command = "GAME_JOINED"
 )
 
 func NewMessage(command Command, playerId, content string) Message {

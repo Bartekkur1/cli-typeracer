@@ -1,6 +1,9 @@
 package state
 
 import (
+	"errors"
+
+	"github.com/google/uuid"
 	"github.com/gorilla/websocket"
 )
 
@@ -10,30 +13,52 @@ type Player struct {
 	GameId     string
 }
 
-type GameState struct {
+type GameState string
+
+const (
+	WaitingForOpponent GameState = "WaitingForOpponent"
+	Running            GameState = "Running"
+	Finished           GameState = "Finished"
+)
+
+type Game struct {
 	Id       string
+	State    GameState
 	Owner    *Player
 	Opponent *Player
 }
 
-var games = make(map[string]*GameState)
+var games = make(map[string]*Game)
+var players = make(map[string]*Player)
 
 func generateGameId() string {
-	return "1"
+	id := uuid.New()
+	return id.String()
 }
 
-func CreateGame(owner *Player) (string, error) {
-	gameId := generateGameId()
-	game := &GameState{
-		Id: gameId,
+func CreatePlayer(id string, conn *websocket.Conn) {
+	player := &Player{
+		Id:         id,
+		Connection: conn,
 	}
-	owner.GameId = gameId
-	games[gameId] = game
-	game.Owner = owner
-	return gameId, nil
+	players[id] = player
 }
 
-func DisconnectPlayers(game *GameState) {
+func CreateGame(ownerId string) (string, error) {
+	if players[ownerId] == nil {
+		return "", errors.New("Player not found")
+	}
+
+	game := &Game{
+		Id:    generateGameId(),
+		Owner: players[ownerId],
+		State: WaitingForOpponent,
+	}
+	games[game.Id] = game
+	return game.Id, nil
+}
+
+func DisconnectPlayers(game *Game) {
 	if game.Owner != nil {
 		game.Owner.GameId = ""
 	}
@@ -52,12 +77,18 @@ func CloseGame(gameId string) (result string, err error) {
 	return "Game closed", nil
 }
 
-func JoinGame(gameId string, player *Player) (message string, err error) {
+func JoinGame(gameId string, playerId string) (err error) {
+	player := players[playerId]
+	if player == nil {
+		return errors.New("Player not found")
+	}
+
 	game := games[gameId]
 	if game == nil {
-		return "Game not found", nil
+		return errors.New("Game not found")
 	}
 	game.Opponent = player
+	game.State = Running
 	player.GameId = gameId
-	return "Player joined", nil
+	return nil
 }
