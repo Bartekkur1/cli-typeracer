@@ -1,4 +1,4 @@
-import { describe, test } from 'bun:test';
+import { describe, expect, test } from 'bun:test';
 import { webSocket } from './util';
 import { v4 } from 'uuid';
 import { Command } from './types';
@@ -16,7 +16,9 @@ describe('Welcome Message test', () => {
       content: `${Date.now()}`,
     });
 
-    console.log(response);
+    expect(response.playerId).toBe(playerId);
+    expect(response.command).toBe(Command.Welcome);
+    expect(response.content).toBe('Welcome to the server!');
 
     await ws.close();
     done();
