@@ -1,7 +1,7 @@
 package socket
 
 import (
-	"fmt"
+	"cli-typeracer/server/util"
 	"log"
 	"net/http"
 
@@ -23,14 +23,28 @@ func HandleConnections(w http.ResponseWriter, r *http.Request) {
 	}
 	defer ws.Close()
 
+	ws.SetCloseHandler(func(code int, text string) error {
+		log.Printf("WebSocket closed: code %d, message %s\n", code, text)
+		return nil
+	})
+
 	for {
 		_, message, err := ws.ReadMessage()
 		if err != nil {
-			log.Println("Error reading message:", err)
+			if websocket.IsCloseError(err, websocket.CloseNormalClosure, websocket.CloseGoingAway) {
+				log.Println("Connection closed normally:", err)
+			} else {
+				log.Println("Error reading message:", err)
+			}
 			break
 		}
 
-		fmt.Printf("Received message: %s\n", message)
+		if !util.LooksLikeJSON(message) {
+			log.Printf("Received non-JSON message: %s\n", message)
+			continue
+		}
+
+		log.Printf("Received message: %s\n", message)
 		HandleMessage(ws, message)
 	}
 }

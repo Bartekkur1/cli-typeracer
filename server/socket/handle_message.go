@@ -4,7 +4,6 @@ import (
 	"cli-typeracer/server/communication"
 	"cli-typeracer/server/state"
 	"encoding/json"
-	"fmt"
 	"log"
 
 	"github.com/gorilla/websocket"
@@ -41,7 +40,6 @@ func handleCommand(ws *websocket.Conn, message *communication.Message) {
 }
 
 func HandleMessage(ws *websocket.Conn, rawMessage []byte) {
-	fmt.Printf("Received message: %s\n", rawMessage)
 	var message communication.Message
 	var response communication.Message
 

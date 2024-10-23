@@ -2,6 +2,7 @@ package state
 
 import (
 	"errors"
+	"log"
 
 	"github.com/google/uuid"
 	"github.com/gorilla/websocket"
@@ -37,6 +38,10 @@ func generateGameId() string {
 }
 
 func CreatePlayer(id string, conn *websocket.Conn) {
+	if players[id] != nil {
+		log.Printf("Player %s already exists! \n", id)
+		return
+	}
 	player := &Player{
 		Id:         id,
 		Connection: conn,
