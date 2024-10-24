@@ -6,7 +6,7 @@ import (
 )
 
 func ValidateMessage(message *communication.Message) error {
-	if message.PlayerId == "" {
+	if message.PlayerId == "" && message.Command != communication.Welcome {
 		return errors.New("playerId is required")
 	}
 	if message.Command == "" {

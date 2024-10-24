@@ -2,57 +2,37 @@ package state
 
 import (
 	"errors"
-	"log"
 
 	"github.com/google/uuid"
 	"github.com/gorilla/websocket"
 )
 
-type Player struct {
-	Id         string
-	Connection *websocket.Conn
-	GameId     string
-}
-
-type GameState string
-
-const (
-	WaitingForOpponent GameState = "WaitingForOpponent"
-	Running            GameState = "Running"
-	Finished           GameState = "Finished"
-)
-
-type Game struct {
-	Id       string
-	State    GameState
-	Owner    *Player
-	Opponent *Player
-}
-
 var games = make(map[string]*Game)
 var players = make(map[string]*Player)
 
-func generateGameId() string {
+func generateId() string {
 	id := uuid.New()
 	return id.String()
 }
 
-func CreatePlayer(id string, conn *websocket.Conn) error {
-	if players[id] != nil {
-		log.Printf("Player %s already exists! \n", id)
-		return errors.New("Player already exists")
-	}
+func generateGameId() string {
+	id := uuid.New()
+	return id.String()[:8]
+}
+
+func CreatePlayer(ws *websocket.Conn) string {
+	id := generateId()
 	player := &Player{
-		Id:         id,
-		Connection: conn,
+		Id:   id,
+		Conn: ws,
 	}
 	players[id] = player
-	return nil
+	return id
 }
 
 func CreateGame(ownerId string) (string, error) {
 	if players[ownerId] == nil {
-		return "", errors.New("Player not found")
+		return "", errors.New("player not found")
 	}
 
 	game := &Game{
@@ -73,7 +53,7 @@ func DisconnectPlayers(game *Game) {
 	}
 }
 
-func CloseGame(gameId string) (result string, err error) {
+func CloseGame(gameId string) (string, error) {
 	game := games[gameId]
 	DisconnectPlayers(game)
 	if game == nil {
@@ -83,15 +63,15 @@ func CloseGame(gameId string) (result string, err error) {
 	return "Game closed", nil
 }
 
-func JoinGame(gameId string, playerId string) (err error) {
+func JoinGame(gameId string, playerId string) error {
 	player := players[playerId]
 	if player == nil {
-		return errors.New("Player not found")
+		return errors.New("player not found")
 	}
 
 	game := games[gameId]
 	if game == nil {
-		return errors.New("Game not found")
+		return errors.New("game not found")
 	}
 	game.Opponent = player
 	game.State = Running

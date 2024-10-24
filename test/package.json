@@ -1,5 +1,5 @@
 {
-  "name": "Integration tests for cli-typeracer",
+  "name": "cli-typeracer-integration-tests",
   "module": "index.ts",
   "type": "module",
   "scripts": {
@@ -10,9 +10,5 @@
   },
   "peerDependencies": {
     "typescript": "^5.0.0"
-  },
-  "dependencies": {
-    "@types/uuid": "^10.0.0",
-    "uuid": "^10.0.0"
   }
 }
