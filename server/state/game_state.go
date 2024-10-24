@@ -37,16 +37,17 @@ func generateGameId() string {
 	return id.String()
 }
 
-func CreatePlayer(id string, conn *websocket.Conn) {
+func CreatePlayer(id string, conn *websocket.Conn) error {
 	if players[id] != nil {
 		log.Printf("Player %s already exists! \n", id)
-		return
+		return errors.New("Player already exists")
 	}
 	player := &Player{
 		Id:         id,
 		Connection: conn,
 	}
 	players[id] = player
+	return nil
 }
 
 func CreateGame(ownerId string) (string, error) {
