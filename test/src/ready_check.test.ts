@@ -30,6 +30,8 @@ describe('Ready Check', () => {
 
     expect(notReadyResponse.command).toBe(Command.Error);
     expect(notReadyResponse.content).toBe(`waiting for opponent`);
+
+    await player.close();
   });
 
   test('Should not be able to be ready without opponent in game', async () => {
@@ -50,6 +52,7 @@ describe('Ready Check', () => {
 
     expect(readyResponse.command).toBe(Command.Error);
     expect(readyResponse.content).toBe(`waiting for opponent`);
+    await player.close();
   });
 
   test('Should be able to ready up with opponent in game', async () => {
@@ -105,6 +108,8 @@ describe('Ready Check', () => {
     expect(hostNotReadyResponse.command).toBe(Command.ACK);
     expect(hostNotReadyResponse.content).toBe(`Player ${opponent.playerId} is not ready`);
 
+    await host.close();
+    await opponent.close();
   });
 
 });

@@ -4,7 +4,7 @@ import { Command } from './types';
 
 describe('Welcome Message test', () => {
 
-  test('Should receive welcome message', async (done) => {
+  test('Should receive welcome message', async () => {
     const ws = webSocket();
     await ws.startAndWait();
     const response = await ws.sendMessage({
@@ -17,6 +17,5 @@ describe('Welcome Message test', () => {
     expect(response.content).toBe('Welcome to the server!');
 
     await ws.close();
-    done();
   })
 });

@@ -2,6 +2,7 @@ package state
 
 import (
 	"errors"
+	"log"
 
 	"github.com/google/uuid"
 	"github.com/gorilla/websocket"
@@ -36,6 +37,7 @@ func PlayerReady(playerId string, ready bool) error {
 	}
 
 	player.Ready = ready
+	log.Println("Player", playerId, "is ready:", ready)
 	return nil
 }
 
@@ -54,6 +56,9 @@ func StartGame(hostId string) (*Game, error) {
 	}
 	if !game.Owner.Ready || !game.Opponent.Ready {
 		return nil, errors.New("players are not ready")
+	}
+	if game.Owner.Id != hostId {
+		return nil, errors.New("only the host can start the game")
 	}
 
 	game.State = Running

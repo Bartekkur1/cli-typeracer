@@ -14,7 +14,7 @@ export const createMessage = ({
     command,
     content,
   });
-  console.log(mess);
+  // console.log(mess);
   return mess;
 };
 
@@ -62,6 +62,13 @@ export const webSocket = () => ({
         playerId: this.playerId,
         ...message,
       }));
+    });
+  },
+  waitForMessage: async function (): Promise<Message> {
+    return new Promise((resolve) => {
+      this.ws.addEventListener('message', (event) => {
+        resolve(JSON.parse(event.data as string) as Message);
+      });
     });
   },
   close: async function () {

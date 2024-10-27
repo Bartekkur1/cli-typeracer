@@ -14,6 +14,8 @@ describe('Join Game', () => {
 
     expect(response.command).toBe(Command.Error);
     expect(response.content).toBe("player not found");
+
+    await ws.close();
   });
 
   test('Should be able to join existing game', async () => {
@@ -34,6 +36,9 @@ describe('Join Game', () => {
     });
 
     expect(joinResponse.command).toBe(Command.GameJoined);
+
+    await host.close();
+    await opponent.close();
   });
 
 });

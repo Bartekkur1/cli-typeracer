@@ -15,6 +15,8 @@ describe('Create game', () => {
 
     expect(response.command).toBe(Command.Error);
     expect(response.content).toBe("player not found");
+
+    await ws.close();
   });
 
   test('Should create game and return its invite token', async () => {
@@ -27,6 +29,8 @@ describe('Create game', () => {
     expect(createGameResponse.command).toBe(Command.GameCreated);
     expect(createGameResponse.content).not.toBeEmpty();
     expect(createGameResponse.content.length).toEqual(5);
+
+    await player.close();
   });
 
 });
