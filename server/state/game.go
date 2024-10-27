@@ -6,6 +6,7 @@ type GameState string
 
 const (
 	WaitingForOpponent GameState = "WaitingForOpponent"
+	Ready              GameState = "Ready"
 	Running            GameState = "Running"
 	Finished           GameState = "Finished"
 )
@@ -13,6 +14,7 @@ const (
 type Player struct {
 	Id     string
 	GameId string
+	Ready  bool
 	Conn   *websocket.Conn
 }
 

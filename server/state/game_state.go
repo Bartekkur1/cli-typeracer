@@ -17,7 +17,47 @@ func generateId() string {
 
 func generateGameId() string {
 	id := uuid.New()
-	return id.String()[:8]
+	return id.String()[:5]
+}
+
+func PlayerReady(playerId string, ready bool) error {
+	player := players[playerId]
+	if player == nil {
+		return errors.New("player not found")
+	}
+
+	game := games[player.GameId]
+	if game == nil {
+		return errors.New("game not found")
+	}
+
+	if game.Opponent == nil {
+		return errors.New("waiting for opponent")
+	}
+
+	player.Ready = ready
+	return nil
+}
+
+func StartGame(hostId string) (*Game, error) {
+	player := players[hostId]
+	if player == nil {
+		return nil, errors.New("player not found")
+	}
+
+	game := games[player.GameId]
+	if game == nil {
+		return nil, errors.New("game not found")
+	}
+	if game.State != Ready {
+		return nil, errors.New("waiting for opponent")
+	}
+	if !game.Owner.Ready || !game.Opponent.Ready {
+		return nil, errors.New("players are not ready")
+	}
+
+	game.State = Running
+	return game, nil
 }
 
 func CreatePlayer(ws *websocket.Conn) string {
@@ -31,7 +71,8 @@ func CreatePlayer(ws *websocket.Conn) string {
 }
 
 func CreateGame(ownerId string) (string, error) {
-	if players[ownerId] == nil {
+	player := players[ownerId]
+	if player == nil {
 		return "", errors.New("player not found")
 	}
 
@@ -41,6 +82,7 @@ func CreateGame(ownerId string) (string, error) {
 		State: WaitingForOpponent,
 	}
 	games[game.Id] = game
+	player.GameId = game.Id
 	return game.Id, nil
 }
 
@@ -74,7 +116,7 @@ func JoinGame(gameId string, playerId string) error {
 		return errors.New("game not found")
 	}
 	game.Opponent = player
-	game.State = Running
+	game.State = Ready
 	player.GameId = gameId
 	return nil
 }

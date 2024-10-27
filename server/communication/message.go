@@ -13,11 +13,22 @@ type Command string
 const (
 	Error        Command = "ERROR"
 	Unrecognized Command = "UNRECOGNIZED"
-	Welcome      Command = "WELCOME"
-	CreateGame   Command = "CREATE_GAME"
-	GameCreated  Command = "GAME_CREATED"
-	JoinGame     Command = "JOIN_GAME"
-	GameJoined   Command = "GAME_JOINED"
+
+	Welcome Command = "WELCOME"
+
+	CreateGame  Command = "CREATE_GAME"
+	GameCreated Command = "GAME_CREATED"
+
+	JoinGame   Command = "JOIN_GAME"
+	GameJoined Command = "GAME_JOINED"
+
+	Ready    Command = "READY"
+	NotReady Command = "NOT_READY"
+
+	StartGame   Command = "START_GAME"
+	GameStarted Command = "GAME_STARTED"
+
+	ACK Command = "ACK"
 )
 
 func NewMessage(command Command, playerId, content string) Message {

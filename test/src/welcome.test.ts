@@ -8,9 +8,8 @@ describe('Welcome Message test', () => {
     const ws = webSocket();
     await ws.startAndWait();
     const response = await ws.sendMessage({
-      playerId: "",
       command: Command.Welcome,
-      content: `${Date.now()}`,
+      content: ``,
     });
 
     expect(response.playerId).toBeString();

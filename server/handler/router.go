@@ -12,4 +12,7 @@ var CommandHandlers = map[communication.Command]Handler{
 	// communication.Welcome: HandleWelcome, - this is a exception because it requires a websocket to be passed as a parameter
 	communication.CreateGame: HandleCreateGame,
 	communication.JoinGame:   HandleJoinGame,
+	communication.Ready:      HandleReadyCheck,
+	communication.NotReady:   HandleReadyCheck,
+	communication.StartGame:  HandleStartGame,
 }
