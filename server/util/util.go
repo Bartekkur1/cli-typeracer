@@ -14,5 +14,8 @@ func LooksLikeJSON(data []byte) bool {
 }
 
 func SendPlayerMessage(player *state.Player, message communication.Message) {
+	if player.Conn == nil {
+		return
+	}
 	player.Conn.WriteMessage(websocket.TextMessage, []byte(communication.MessageToBytes(&message)))
 }

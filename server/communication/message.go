@@ -25,8 +25,12 @@ const (
 	Ready    Command = "READY"
 	NotReady Command = "NOT_READY"
 
-	StartGame   Command = "START_GAME"
-	GameStarted Command = "GAME_STARTED"
+	StartGame    Command = "START_GAME"
+	GameStarting Command = "GAME_STARTING"
+	GameStarted  Command = "GAME_STARTED"
+
+	LeaveGame  Command = "LEAVE_GAME"
+	PlayerLeft Command = "PLAYER_LEFT"
 
 	ACK Command = "ACK"
 )

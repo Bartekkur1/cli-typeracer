@@ -85,7 +85,7 @@ describe('Start game', () => {
     expect(opponentReadyResponse.command).toBe(Command.ACK);
 
     host.waitForMessage().then((message) => {
-      expect(message.command).toBe(Command.GameStarted);
+      expect(message.command).toBe(Command.GameStarting);
       expect(message.content.length).toEqual(13);
     });
 
