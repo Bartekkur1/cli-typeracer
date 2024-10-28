@@ -10,6 +10,7 @@ export enum Command {
   NotReady = "NOT_READY",
   ACK = 'ACK',
   StartGame = "START_GAME",
+  GameStarting = "GAME_STARTING",
   GameStarted = "GAME_STARTED",
 }
 

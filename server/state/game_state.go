@@ -91,7 +91,7 @@ func CreateGame(ownerId string) (string, error) {
 	return game.Id, nil
 }
 
-func DisconnectPlayers(game *Game) {
+func RemovePlayersGames(game *Game) {
 	if game.Owner != nil {
 		game.Owner.GameId = ""
 	}
@@ -100,9 +100,29 @@ func DisconnectPlayers(game *Game) {
 	}
 }
 
+func FindGame(playerId string) (*Game, error) {
+	player := players[playerId]
+	if player == nil {
+		return nil, errors.New("player not found")
+	}
+
+	game := games[player.GameId]
+	return game, nil
+}
+
+func RemoveGame(gameId string) error {
+	game := games[gameId]
+	if game == nil {
+		return errors.New("game not found")
+	}
+	RemovePlayersGames(game)
+	delete(games, gameId)
+	return nil
+}
+
 func CloseGame(gameId string) (string, error) {
 	game := games[gameId]
-	DisconnectPlayers(game)
+	RemovePlayersGames(game)
 	if game == nil {
 		return "", nil
 	}
