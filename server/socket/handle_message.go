@@ -2,7 +2,7 @@ package socket
 
 import (
 	"cli-typeracer/server/communication"
-	"cli-typeracer/server/state"
+	"cli-typeracer/server/handler"
 	"encoding/json"
 	"log"
 
@@ -11,32 +11,22 @@ import (
 
 func handleCommand(ws *websocket.Conn, message *communication.Message) {
 	var response communication.Message
-	var handleError error
+	var handlerError error
 
-	switch message.Command {
-	case communication.Welcome:
-		state.CreatePlayer(message.PlayerId, ws)
-		response = communication.NewMessage(communication.Welcome, message.PlayerId, "Welcome to the server!")
-	case communication.CreateGame:
-		var gameId string
-		gameId, handleError = state.CreateGame(message.PlayerId)
-		response = communication.NewMessage(communication.GameCreated, message.PlayerId, gameId)
-	case communication.JoinGame:
-		handleError = state.JoinGame(message.Content, message.PlayerId)
-		if handleError != nil {
-			response = communication.NewMessage(communication.Error, message.PlayerId, handleError.Error())
-		}
-		response = communication.NewMessage(communication.GameJoined, message.PlayerId, "")
-	default:
+	var handler = handler.CommandHandlers[message.Command]
+	if handler == nil {
+		log.Printf("No handler found for command: %v", message.Command)
 		response = communication.NewMessage(communication.Unrecognized, message.PlayerId, "Unknown command")
-	}
-
-	if handleError != nil {
-		response = communication.NewMessage(communication.Error, message.PlayerId, handleError.Error())
+		ws.WriteMessage(websocket.TextMessage, []byte(communication.MessageToBytes(&response)))
 		return
 	}
-	ws.WriteMessage(websocket.TextMessage, []byte(communication.MessageToBytes(&response)))
 
+	response, handlerError = handler(ws, message)
+	if handlerError != nil {
+		response = communication.NewMessage(communication.Error, message.PlayerId, handlerError.Error())
+	}
+
+	ws.WriteMessage(websocket.TextMessage, []byte(communication.MessageToBytes(&response)))
 }
 
 func HandleMessage(ws *websocket.Conn, rawMessage []byte) {
