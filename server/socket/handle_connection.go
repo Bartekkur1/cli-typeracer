@@ -1,7 +1,7 @@
 package socket
 
 import (
-	"cli-typeracer/server/util"
+	"cli-typeracer/server/communication"
 	"log"
 	"net/http"
 
@@ -29,22 +29,20 @@ func HandleConnections(w http.ResponseWriter, r *http.Request) {
 	})
 
 	for {
-		_, message, err := ws.ReadMessage()
+		var message communication.Message
+		err := ws.ReadJSON(&message)
 		if err != nil {
 			if websocket.IsCloseError(err, websocket.CloseNormalClosure, websocket.CloseGoingAway) {
 				log.Println("Connection closed normally:", err)
 			} else {
 				log.Println("Error reading message:", err)
+				var response = communication.NewMessage(communication.Error, message.PlayerId, err.Error())
+				ws.WriteMessage(websocket.TextMessage, []byte(communication.MessageToBytes(&response)))
 			}
 			break
 		}
 
-		if !util.LooksLikeJSON(message) {
-			log.Printf("Received non-JSON message: %s\n", message)
-			continue
-		}
-
-		log.Printf("Received message: %s\n", message)
+		log.Printf("Received message: %+v\n", message)
 		HandleMessage(ws, message)
 	}
 }

@@ -8,51 +8,77 @@ import (
 	"github.com/gorilla/websocket"
 )
 
-type Player struct {
-	Id         string
-	Connection *websocket.Conn
-	GameId     string
-}
-
-type GameState string
-
-const (
-	WaitingForOpponent GameState = "WaitingForOpponent"
-	Running            GameState = "Running"
-	Finished           GameState = "Finished"
-)
-
-type Game struct {
-	Id       string
-	State    GameState
-	Owner    *Player
-	Opponent *Player
-}
-
 var games = make(map[string]*Game)
 var players = make(map[string]*Player)
 
-func generateGameId() string {
+func generateId() string {
 	id := uuid.New()
 	return id.String()
 }
 
-func CreatePlayer(id string, conn *websocket.Conn) error {
-	if players[id] != nil {
-		log.Printf("Player %s already exists! \n", id)
-		return errors.New("Player already exists")
+func generateGameId() string {
+	id := uuid.New()
+	return id.String()[:5]
+}
+
+func PlayerReady(playerId string, ready bool) error {
+	player := players[playerId]
+	if player == nil {
+		return errors.New("player not found")
 	}
-	player := &Player{
-		Id:         id,
-		Connection: conn,
+
+	game := games[player.GameId]
+	if game == nil {
+		return errors.New("game not found")
 	}
-	players[id] = player
+
+	if game.Opponent == nil {
+		return errors.New("waiting for opponent")
+	}
+
+	player.Ready = ready
+	log.Println("Player", playerId, "is ready:", ready)
 	return nil
 }
 
+func StartGame(hostId string) (*Game, error) {
+	player := players[hostId]
+	if player == nil {
+		return nil, errors.New("player not found")
+	}
+
+	game := games[player.GameId]
+	if game == nil {
+		return nil, errors.New("game not found")
+	}
+	if game.State != Ready {
+		return nil, errors.New("waiting for opponent")
+	}
+	if !game.Owner.Ready || !game.Opponent.Ready {
+		return nil, errors.New("players are not ready")
+	}
+	if game.Owner.Id != hostId {
+		return nil, errors.New("only the host can start the game")
+	}
+
+	game.State = Running
+	return game, nil
+}
+
+func CreatePlayer(ws *websocket.Conn) string {
+	id := generateId()
+	player := &Player{
+		Id:   id,
+		Conn: ws,
+	}
+	players[id] = player
+	return id
+}
+
 func CreateGame(ownerId string) (string, error) {
-	if players[ownerId] == nil {
-		return "", errors.New("Player not found")
+	player := players[ownerId]
+	if player == nil {
+		return "", errors.New("player not found")
 	}
 
 	game := &Game{
@@ -61,6 +87,7 @@ func CreateGame(ownerId string) (string, error) {
 		State: WaitingForOpponent,
 	}
 	games[game.Id] = game
+	player.GameId = game.Id
 	return game.Id, nil
 }
 
@@ -73,7 +100,7 @@ func DisconnectPlayers(game *Game) {
 	}
 }
 
-func CloseGame(gameId string) (result string, err error) {
+func CloseGame(gameId string) (string, error) {
 	game := games[gameId]
 	DisconnectPlayers(game)
 	if game == nil {
@@ -83,18 +110,18 @@ func CloseGame(gameId string) (result string, err error) {
 	return "Game closed", nil
 }
 
-func JoinGame(gameId string, playerId string) (err error) {
+func JoinGame(gameId string, playerId string) error {
 	player := players[playerId]
 	if player == nil {
-		return errors.New("Player not found")
+		return errors.New("player not found")
 	}
 
 	game := games[gameId]
 	if game == nil {
-		return errors.New("Game not found")
+		return errors.New("game not found")
 	}
 	game.Opponent = player
-	game.State = Running
+	game.State = Ready
 	player.GameId = gameId
 	return nil
 }

@@ -1,5 +1,5 @@
 {
-  "name": "Integration tests for cli-typeracer",
+  "name": "cli-typeracer-integration-tests",
   "module": "index.ts",
   "type": "module",
   "scripts": {
