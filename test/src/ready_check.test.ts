@@ -1,112 +1,41 @@
 import { describe, expect, test } from 'bun:test';
-import { createPlayer } from './util';
 import { Command } from './types';
+import { ServerClient, wait } from './util';
 
 describe('Ready Check', () => {
 
   test('Should join game and change self state to ready/not ready', async () => {
-    const player = await createPlayer();
-    const createGameResponse = await player.sendMessage({
-      command: Command.CreateGame,
-      content: ``,
-    });
+    const player = await ServerClient.createPlayer({ register: true });
+    await player.createGame();
+    await player.readyCheck();
 
-    expect(createGameResponse.command).toBe(Command.GameCreated);
-    expect(createGameResponse.content).not.toBeEmpty();
-    expect(createGameResponse.content.length).toEqual(5);
+    let latestResponse = await player.getLatestMessage();
+    expect(latestResponse.command).toBe(Command.Error);
+    expect(latestResponse.content).toBe(`waiting for opponent`);
 
-    const readyResponse = await player.sendMessage({
-      command: Command.Ready,
-      content: ``,
-    });
+    await player.readyCheck(false);
+    latestResponse = await player.getLatestMessage();
+    expect(latestResponse.command).toBe(Command.Error);
+    expect(latestResponse.content).toBe(`waiting for opponent`);
 
-    expect(readyResponse.command).toBe(Command.Error);
-    expect(readyResponse.content).toBe(`waiting for opponent`);
-
-    const notReadyResponse = await player.sendMessage({
-      command: Command.NotReady,
-      content: ``,
-    });
-
-    expect(notReadyResponse.command).toBe(Command.Error);
-    expect(notReadyResponse.content).toBe(`waiting for opponent`);
-
-    await player.close();
-  });
-
-  test('Should not be able to be ready without opponent in game', async () => {
-    const player = await createPlayer();
-    const createGameResponse = await player.sendMessage({
-      command: Command.CreateGame,
-      content: ``,
-    });
-
-    expect(createGameResponse.command).toBe(Command.GameCreated);
-    expect(createGameResponse.content).not.toBeEmpty();
-    expect(createGameResponse.content.length).toEqual(5);
-
-    const readyResponse = await player.sendMessage({
-      command: Command.Ready,
-      content: ``,
-    });
-
-    expect(readyResponse.command).toBe(Command.Error);
-    expect(readyResponse.content).toBe(`waiting for opponent`);
     await player.close();
   });
 
   test('Should be able to ready up with opponent in game', async () => {
-    const host = await createPlayer();
-    const opponent = await createPlayer();
+    const host = await ServerClient.createPlayer({ register: true });
+    const opponent = await ServerClient.createPlayer({ register: true });
 
-    const createGameResponse = await host.sendMessage({
-      command: Command.CreateGame,
-      content: ``,
-    });
+    await host.createGame();
+    await opponent.joinGame(host.gameId!);
 
-    expect(createGameResponse.command).toBe(Command.GameCreated);
-    expect(createGameResponse.content).not.toBeEmpty();
-    expect(createGameResponse.content.length).toEqual(5);
+    await host.readyCheck();
+    await opponent.readyCheck();
 
-    const gameId = createGameResponse.content;
+    const hostReadyNotification = host.messages.filter(m => m.command === Command.PlayerReady);
+    expect(hostReadyNotification.length).toBe(2);
 
-    const joinGameResponse = await opponent.sendMessage({
-      command: Command.JoinGame,
-      content: gameId,
-    });
-
-    expect(joinGameResponse.command).toBe(Command.GameJoined);
-
-    const hostReadyResponse = await host.sendMessage({
-      command: Command.Ready,
-      content: ``,
-    });
-
-    expect(hostReadyResponse.command).toBe(Command.ACK);
-    expect(hostReadyResponse.content).toBe(`Player ${host.playerId} is ready`);
-
-    const opponentReadyResponse = await opponent.sendMessage({
-      command: Command.Ready,
-      content: ``,
-    });
-
-    expect(opponentReadyResponse.command).toBe(Command.ACK);
-    expect(opponentReadyResponse.content).toBe(`Player ${opponent.playerId} is ready`);
-
-    const opponentNotReadyResponse = await opponent.sendMessage({
-      command: Command.NotReady,
-      content: ``,
-    });
-
-    expect(opponentNotReadyResponse.command).toBe(Command.ACK);
-    expect(opponentNotReadyResponse.content).toBe(`Player ${opponent.playerId} is not ready`);
-
-    const hostNotReadyResponse = await opponent.sendMessage({
-      command: Command.NotReady,
-      content: ``,
-    });
-    expect(hostNotReadyResponse.command).toBe(Command.ACK);
-    expect(hostNotReadyResponse.content).toBe(`Player ${opponent.playerId} is not ready`);
+    const opponentReadyNotification = host.messages.filter(m => m.command === Command.PlayerReady);
+    expect(opponentReadyNotification.length).toBe(2);
 
     await host.close();
     await opponent.close();

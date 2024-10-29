@@ -1,19 +1,19 @@
 package handler
 
 import (
-	"cli-typeracer/server/communication"
-	"cli-typeracer/server/state"
 	"log"
+
+	"github.com/bartekkur1/cli-typeracer/contract/communication"
+	"github.com/bartekkur1/cli-typeracer/server/state"
 )
 
 func HandleCreateGame(message *communication.Message) (communication.Message, error) {
 	var gameId, err = state.CreateGame(message.PlayerId)
 
-	log.Printf("Game created: %s", gameId)
-
 	if err != nil {
 		return communication.Message{}, err
 	}
 
+	log.Printf("Game created: %s", gameId)
 	return communication.NewMessage(communication.GameCreated, message.PlayerId, gameId), nil
 }

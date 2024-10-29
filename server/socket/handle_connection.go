@@ -1,9 +1,10 @@
 package socket
 
 import (
-	"cli-typeracer/server/communication"
 	"log"
 	"net/http"
+
+	"github.com/bartekkur1/cli-typeracer/contract/communication"
 
 	"github.com/gorilla/websocket"
 )

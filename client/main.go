@@ -1,8 +1,8 @@
 package main
 
 import (
-	"cli-typeracer/client/engine"
-	"cli-typeracer/client/types"
+	"github.com/bartekkur1/cli-typeracer/client/engine"
+	"github.com/bartekkur1/cli-typeracer/client/types"
 
 	"github.com/eiannone/keyboard"
 )
@@ -13,7 +13,7 @@ func main() {
 		panic(err)
 	}
 	defer keyboard.Close()
-	var gameState = types.Engine{GameState: types.MainMenu}
+	var gameState = types.CreateEngine()
 
 	for {
 		engine.PrintEngine(&gameState)

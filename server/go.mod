@@ -1,4 +1,4 @@
-module cli-typeracer/server
+module github.com/bartekkur1/cli-typeracer/server
 
 go 1.23.2
 

@@ -21,24 +21,43 @@ func generateGameId() string {
 	return id.String()[:5]
 }
 
-func PlayerReady(playerId string, ready bool) error {
+func AssertPlayerExists(playerId string) error {
+	if players[playerId] == nil {
+		return errors.New("player not found")
+	}
+	return nil
+}
+
+func AssertGameJoined(playerId string) error {
 	player := players[playerId]
 	if player == nil {
 		return errors.New("player not found")
 	}
 
+	if player.GameId == "" {
+		return errors.New("player has not joined a game")
+	}
+	return nil
+}
+
+func PlayerReady(playerId string, ready bool) (*Game, error) {
+	player := players[playerId]
+	if player == nil {
+		return nil, errors.New("player not found")
+	}
+
 	game := games[player.GameId]
 	if game == nil {
-		return errors.New("game not found")
+		return nil, errors.New("game not found")
 	}
 
 	if game.Opponent == nil {
-		return errors.New("waiting for opponent")
+		return nil, errors.New("waiting for opponent")
 	}
 
 	player.Ready = ready
 	log.Println("Player", playerId, "is ready:", ready)
-	return nil
+	return game, nil
 }
 
 func StartGame(hostId string) (*Game, error) {
@@ -101,13 +120,28 @@ func RemovePlayersGames(game *Game) {
 }
 
 func FindGame(playerId string) (*Game, error) {
-	player := players[playerId]
-	if player == nil {
-		return nil, errors.New("player not found")
+	if err := AssertPlayerExists(playerId); err != nil {
+		return nil, err
+	}
+	if err := AssertGameJoined(playerId); err != nil {
+		return nil, err
 	}
 
+	player := players[playerId]
 	game := games[player.GameId]
+
 	return game, nil
+}
+
+func LeaveGame(playerId string) error {
+	game, err := FindGame(playerId)
+	if err != nil {
+		return err
+	}
+
+	game.Owner.Ready = false
+	game.Opponent = nil
+	return nil
 }
 
 func RemoveGame(gameId string) error {
@@ -122,26 +156,26 @@ func RemoveGame(gameId string) error {
 
 func CloseGame(gameId string) (string, error) {
 	game := games[gameId]
-	RemovePlayersGames(game)
 	if game == nil {
 		return "", nil
 	}
+	RemovePlayersGames(game)
 	delete(games, gameId)
 	return "Game closed", nil
 }
 
-func JoinGame(gameId string, playerId string) error {
+func JoinGame(gameId string, playerId string) (*Game, error) {
 	player := players[playerId]
 	if player == nil {
-		return errors.New("player not found")
+		return nil, errors.New("player not found")
 	}
 
 	game := games[gameId]
 	if game == nil {
-		return errors.New("game not found")
+		return nil, errors.New("game not found")
 	}
 	game.Opponent = player
 	game.State = Ready
 	player.GameId = gameId
-	return nil
+	return game, nil
 }

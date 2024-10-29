@@ -1,9 +1,10 @@
 package socket
 
 import (
-	"cli-typeracer/server/communication"
 	"cli-typeracer/server/handler"
 	"log"
+
+	"github.com/bartekkur1/cli-typeracer/contract/communication"
 
 	"github.com/gorilla/websocket"
 )
@@ -26,6 +27,7 @@ func handleCommand(ws *websocket.Conn, message *communication.Message) {
 		response, handlerError = commandHandler(message)
 		if handlerError != nil {
 			response = communication.NewMessage(communication.Error, message.PlayerId, handlerError.Error())
+			log.Printf("Error handling command: %v", handlerError)
 		}
 	}
 

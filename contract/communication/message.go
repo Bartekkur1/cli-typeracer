@@ -22,15 +22,18 @@ const (
 	JoinGame   Command = "JOIN_GAME"
 	GameJoined Command = "GAME_JOINED"
 
-	Ready    Command = "READY"
-	NotReady Command = "NOT_READY"
+	PlayerJoined Command = "PLAYER_JOINED"
+	PlayerLeft   Command = "PLAYER_LEFT"
+	PlayerLeave  Command = "PLAYER_LEAVE"
+
+	PlayerReady    Command = "PLAYER_READY"
+	PlayerNotReady Command = "PLAYER_NOT_READY"
 
 	StartGame    Command = "START_GAME"
 	GameStarting Command = "GAME_STARTING"
 	GameStarted  Command = "GAME_STARTED"
 
-	LeaveGame  Command = "LEAVE_GAME"
-	PlayerLeft Command = "PLAYER_LEFT"
+	GameClosed Command = "GAME_CLOSED"
 
 	ACK Command = "ACK"
 )

@@ -1,36 +1,28 @@
 import { describe, expect, test } from 'bun:test';
-import { createPlayer, webSocket } from './util';
 import { Command } from './types';
 import { v4 } from 'uuid';
+import { ServerClient } from './util';
 
 describe('Create game', () => {
 
   test('Should not allow game creation without welcoming', async () => {
-    const ws = webSocket();
-    await ws.startAndWait();
-    const response = await ws.sendMessage({
-      command: Command.CreateGame,
-      content: ``,
-    });
+    const player = await ServerClient.createPlayer();
+    await player.createGame();
 
+    const response = await player.getLatestMessage();
     expect(response.command).toBe(Command.Error);
-    expect(response.content).toBe("player not found");
-
-    await ws.close();
+    expect(response.content).toBe('player not found');
   });
 
   test('Should create game and return its invite token', async () => {
-    const player = await createPlayer();
-    const createGameResponse = await player.sendMessage({
-      command: Command.CreateGame,
-      content: ``,
-    });
+    const player = await ServerClient.createPlayer();
+    await player.register();
+    await player.createGame();
 
-    expect(createGameResponse.command).toBe(Command.GameCreated);
-    expect(createGameResponse.content).not.toBeEmpty();
-    expect(createGameResponse.content.length).toEqual(5);
-
-    await player.close();
+    const response = await player.getLatestMessage();
+    expect(response.command).toBe(Command.GameCreated);
+    expect(response.content).toBeString();
+    expect(response.content.length).toEqual(5);
   });
 
 });

@@ -1,9 +1,10 @@
 package main
 
 import (
-	"cli-typeracer/server/socket"
 	"log"
 	"net/http"
+
+	"github.com/bartekkur1/cli-typeracer/server/socket"
 )
 
 func main() {

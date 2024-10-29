@@ -6,12 +6,16 @@ export enum Command {
   GameCreated = "GAME_CREATED",
   JoinGame = "JOIN_GAME",
   GameJoined = "GAME_JOINED",
-  Ready = "READY",
-  NotReady = "NOT_READY",
   ACK = 'ACK',
   StartGame = "START_GAME",
   GameStarting = "GAME_STARTING",
   GameStarted = "GAME_STARTED",
+  PlayerJoined = "PLAYER_JOINED",
+  PlayerReady = "PLAYER_READY",
+  PlayerNotReady = "PLAYER_NOT_READY",
+  PlayerLeft = "PLAYER_LEFT",
+  PlayerLeave = "PLAYER_LEAVE",
+  GameClosed = "GAME_CLOSED",
 }
 
 export interface Message {

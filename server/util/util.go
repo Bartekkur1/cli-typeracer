@@ -2,8 +2,9 @@ package util
 
 import (
 	"bytes"
-	"cli-typeracer/server/communication"
-	"cli-typeracer/server/state"
+
+	"github.com/bartekkur1/cli-typeracer/server/communication"
+	"github.com/bartekkur1/cli-typeracer/server/state"
 
 	"github.com/gorilla/websocket"
 )
