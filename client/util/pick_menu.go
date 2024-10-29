@@ -1,8 +1,9 @@
 package util
 
 import (
-	"cli-typeracer/client/types"
 	"fmt"
+
+	"github.com/bartekkur1/cli-typeracer/client/types"
 
 	"github.com/eiannone/keyboard"
 )

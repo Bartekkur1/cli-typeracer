@@ -1,8 +1,9 @@
 package socket
 
 import (
-	"cli-typeracer/server/communication"
 	"errors"
+
+	"github.com/bartekkur1/cli-typeracer/contract/communication"
 )
 
 func ValidateMessage(message *communication.Message) error {

@@ -1,7 +1,7 @@
 package handler
 
 import (
-	"github.com/bartekkur1/cli-typeracer/server/communication"
+	"github.com/bartekkur1/cli-typeracer/contract/communication"
 )
 
 // Handler function type definition

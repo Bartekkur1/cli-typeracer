@@ -1,8 +1,8 @@
 package screen
 
 import (
-	"cli-typeracer/client/types"
-	"cli-typeracer/client/util"
+	"github.com/bartekkur1/cli-typeracer/client/types"
+	"github.com/bartekkur1/cli-typeracer/client/util"
 )
 
 func createMainMenuDialog() util.PickMenu {

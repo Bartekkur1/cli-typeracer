@@ -1,9 +1,10 @@
 package engine
 
 import (
-	"cli-typeracer/client/screen"
-	"cli-typeracer/client/types"
 	"fmt"
+
+	"github.com/bartekkur1/cli-typeracer/client/screen"
+	"github.com/bartekkur1/cli-typeracer/client/types"
 )
 
 func PrintEngine(engine *types.Engine) {

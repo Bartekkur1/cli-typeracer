@@ -1,8 +1,9 @@
 package socket
 
 import (
-	"cli-typeracer/server/handler"
 	"log"
+
+	"github.com/bartekkur1/cli-typeracer/server/handler"
 
 	"github.com/bartekkur1/cli-typeracer/contract/communication"
 

@@ -1,10 +1,11 @@
 package screen
 
 import (
-	"cli-typeracer/client/types"
-	"cli-typeracer/client/util"
 	"fmt"
 	"time"
+
+	"github.com/bartekkur1/cli-typeracer/client/types"
+	"github.com/bartekkur1/cli-typeracer/client/util"
 )
 
 func PrintHostGame(engine *types.Engine) {

@@ -5,7 +5,7 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/bartekkur1/cli-typeracer/server/communication"
+	"github.com/bartekkur1/cli-typeracer/contract/communication"
 	"github.com/bartekkur1/cli-typeracer/server/state"
 	"github.com/bartekkur1/cli-typeracer/server/util"
 )
