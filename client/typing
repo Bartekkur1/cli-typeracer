@@ -1,0 +1,41 @@
+cursor := 0
+input := ""
+text := util.ReadFile(1)
+
+if err := keyboard.Open(); err != nil {
+	panic(err)
+}
+defer keyboard.Close()
+
+for {
+	char, key, err := keyboard.GetKey()
+	if err != nil {
+		panic(err)
+	}
+	if key == keyboard.KeyEsc {
+		break
+	}
+
+	if char == rune(text[cursor]) {
+		cursor++
+		input += string(char)
+	} else if key == keyboard.KeySpace && text[cursor] == ' ' {
+		cursor++
+		input += " "
+	}
+
+	util.ClearConsole()
+	for i, char := range text {
+		if i == cursor {
+			// print char in red
+			fmt.Print("\033[31m")
+		} else if i < cursor {
+			// print in green
+			fmt.Print("\033[32m")
+		} else {
+			// print in normal color
+			fmt.Print("\033[0m")
+		}
+		fmt.Printf("%c", char)
+	}
+}
