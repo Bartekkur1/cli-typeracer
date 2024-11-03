@@ -7,24 +7,22 @@ import (
 )
 
 type HostGameScreen struct {
-	inviteCode   *string
-	playerJoined bool
+	inviteCode *string
 }
 
 func (j *HostGameScreen) Render() {
-	fmt.Println("Game Lobby")
-	if j.inviteCode != nil && !j.playerJoined {
+	fmt.Println("Host Game")
+	if j.inviteCode != nil {
 		fmt.Printf("Invite Code: %s\n", *j.inviteCode)
 	} else {
-		fmt.Println("Creating game lobby...")
+		fmt.Println("Creating game...")
 	}
 
-	if j.playerJoined {
-		fmt.Println("Player joined!")
-	}
+	fmt.Println("Waiting for players to join...")
 }
 
 func (j *HostGameScreen) Init(game *Game) {
+	game.store.hostingGame = true
 	game.SendMessage(communication.CreateGame, "")
 }
 
@@ -48,7 +46,7 @@ func (j *HostGameScreen) GetNetworkHandlers(game *Game) []NetworkHandler {
 		{
 			event: communication.PlayerJoined,
 			callback: func(e Event[communication.Message]) {
-				j.playerJoined = true
+				game.ChangeScreen(GameLobby)
 			},
 		},
 	}

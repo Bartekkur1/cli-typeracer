@@ -23,6 +23,7 @@ func (j *JoinGameScreen) Render() {
 func (j *JoinGameScreen) Init(game *Game) {
 	j.inviteCode = ""
 	j.joinErrorMessage = ""
+	game.store.hostingGame = false
 }
 
 func (j *JoinGameScreen) HandleEsc(game *Game) {
@@ -68,7 +69,7 @@ func (j *JoinGameScreen) GetNetworkHandlers(game *Game) []NetworkHandler {
 			event: communication.GameJoined,
 			callback: func(e Event[communication.Message]) {
 				game.store.inviteToken = j.inviteCode
-				game.ChangeScreen(HostGame)
+				game.ChangeScreen(GameLobby)
 			},
 		},
 	}

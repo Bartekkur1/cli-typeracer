@@ -18,12 +18,14 @@ const (
 	Register
 	JoinGame
 	HostGame
+	GameLobby
 )
 
 type GameStorage struct {
 	exit        bool
 	playerId    string
 	inviteToken string
+	hostingGame bool
 }
 
 type Game struct {
@@ -109,8 +111,7 @@ func (game *Game) ChangeScreen(state GameState) {
 }
 
 func (game *Game) SendMessage(command communication.Command, content string) {
-	fmt.Printf("Sending message %s with content %s\n", command, content)
-	message := communication.NewMessage(command, content, "")
+	message := communication.NewMessage(command, "", content)
 	if game.store.playerId != "" {
 		message.PlayerId = game.store.playerId
 	}
@@ -135,7 +136,7 @@ func (game *Game) Run() {
 		cli.ClearConsole()
 		game.screen.Render()
 		// 60 FPS?
-		// time.Sleep(time.Second / 30)
-		time.Sleep(time.Second)
+		time.Sleep(time.Second / 30)
+		// time.Sleep(time.Second)
 	}
 }
