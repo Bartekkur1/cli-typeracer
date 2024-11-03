@@ -1,7 +1,8 @@
 package app
 
 var gameScreens = map[GameState]Screen{
+	Register: &RegisterScreen{},
 	MainMenu: &MainMenuScreen{},
 	JoinGame: &JoinGameScreen{},
-	Register: &RegisterScreen{},
+	HostGame: &HostGameScreen{},
 }

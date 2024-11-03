@@ -19,12 +19,21 @@ type InputManager struct {
 	eventManager EventManager[KeyboardInput]
 }
 
+type InputHandler struct {
+	event    string
+	callback Callback[KeyboardInput]
+}
+
 type InputManagerEvent = Event[KeyboardInput]
 
 func CreateInputManager() *InputManager {
 	return &InputManager{
 		eventManager: *NewEventManager[KeyboardInput](),
 	}
+}
+
+func (im *InputManager) AddKeyListener(key keyboard.Key, callback Callback[KeyboardInput]) {
+	im.AddListener(ToKey(key), callback)
 }
 
 func (im *InputManager) AddListener(event string, callback Callback[KeyboardInput]) {
@@ -34,23 +43,6 @@ func (im *InputManager) AddListener(event string, callback Callback[KeyboardInpu
 func (im *InputManager) ReadKey() (rune, keyboard.Key, error) {
 	char, key, err := keyboard.GetKey()
 	return char, key, err
-}
-
-// @TODO: Find a way to reduce this code duplication
-func (im *InputManager) AddCharListener(char rune, callback Callback[KeyboardInput]) {
-	im.eventManager.AddListener(string(char), callback)
-}
-
-func (im *InputManager) AddKeyListener(key keyboard.Key, callback Callback[KeyboardInput]) {
-	im.eventManager.AddListener(ToKey(key), callback)
-}
-
-func (im *InputManager) RemoveCharListener(char rune) {
-	im.eventManager.RemoveListener(string(char))
-}
-
-func (im *InputManager) RemoveKeyListener(key keyboard.Key) {
-	im.eventManager.RemoveListener(ToKey(key))
 }
 
 func (im *InputManager) EmitCharEvent(char rune) {
@@ -73,10 +65,14 @@ func (im *InputManager) EmitInput(char rune) {
 	}
 }
 
-func (im *InputManager) ListenForAll(callback Callback[KeyboardInput]) {
-	im.eventManager.AddListener(CONSUME_ALL, callback)
+func (im *InputManager) RegisterHandlers(handlers []InputHandler) {
+	for _, handler := range handlers {
+		im.AddListener(handler.event, handler.callback)
+	}
 }
 
-func (im *InputManager) StopListeningForAll() {
-	im.eventManager.StopListeningForAll()
+func (im *InputManager) RemoveHandlers(handlers []InputHandler) {
+	for _, handler := range handlers {
+		im.eventManager.RemoveListener(handler.event)
+	}
 }

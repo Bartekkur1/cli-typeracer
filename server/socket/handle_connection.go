@@ -1,6 +1,7 @@
 package socket
 
 import (
+	"fmt"
 	"log"
 	"net/http"
 
@@ -32,6 +33,7 @@ func HandleConnections(w http.ResponseWriter, r *http.Request) {
 	for {
 		var message communication.Message
 		err := ws.ReadJSON(&message)
+		fmt.Printf("Received message: %+v\n", message)
 		if err != nil {
 			if websocket.IsCloseError(err, websocket.CloseNormalClosure, websocket.CloseGoingAway) {
 				log.Println("Connection closed normally:", err)

@@ -14,11 +14,15 @@ func HandlePlayerLeaveGame(message *communication.Message) (communication.Messag
 
 	if game.Owner.Id == message.PlayerId {
 		util.SendPlayerMessage(game.Owner, communication.NewMessage(communication.GameClosed, game.Owner.Id, message.PlayerId))
-		util.SendPlayerMessage(game.Opponent, communication.NewMessage(communication.GameClosed, game.Opponent.Id, message.PlayerId))
+		if game.Opponent != nil {
+			util.SendPlayerMessage(game.Opponent, communication.NewMessage(communication.GameClosed, game.Opponent.Id, message.PlayerId))
+		}
 		state.CloseGame(game.Id)
 	} else {
 		util.SendPlayerMessage(game.Owner, communication.NewMessage(communication.PlayerLeft, game.Owner.Id, message.PlayerId))
-		util.SendPlayerMessage(game.Opponent, communication.NewMessage(communication.PlayerLeft, game.Opponent.Id, message.PlayerId))
+		if game.Opponent != nil {
+			util.SendPlayerMessage(game.Opponent, communication.NewMessage(communication.PlayerLeft, game.Opponent.Id, message.PlayerId))
+		}
 		state.LeaveGame(message.PlayerId)
 	}
 

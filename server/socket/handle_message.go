@@ -40,6 +40,7 @@ func HandleMessage(ws *websocket.Conn, message communication.Message) {
 
 	var validationError = ValidateMessage(&message)
 	if validationError != nil {
+		log.Printf("Validation error: %v", validationError)
 		response = communication.NewMessage(communication.Error, message.PlayerId, validationError.Error())
 		ws.WriteMessage(websocket.TextMessage, []byte(communication.MessageToBytes(&response)))
 		return

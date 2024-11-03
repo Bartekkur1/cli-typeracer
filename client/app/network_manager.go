@@ -7,9 +7,26 @@ import (
 
 type NetworkMessage = communication.Message
 
+type NetworkHandler struct {
+	event    communication.Command
+	callback Callback[communication.Message]
+}
+
 type NetworkManager struct {
 	eventManager EventManager[NetworkMessage]
 	conn         *websocket.Conn
+}
+
+func (nm *NetworkManager) RegisterHandlers(handlers []NetworkHandler) {
+	for _, handler := range handlers {
+		nm.AddListener(handler.event, handler.callback)
+	}
+}
+
+func (nm *NetworkManager) RemoveHandlers(handlers []NetworkHandler) {
+	for _, handler := range handlers {
+		nm.RemoveListener(handler.event)
+	}
 }
 
 func CreateNetworkManager() *NetworkManager {
