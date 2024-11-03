@@ -23,6 +23,10 @@ func (em *EventManager[T]) ListenForAll(callback Callback[T]) {
 	em.listeners[CONSUME_ALL] = append(em.listeners[CONSUME_ALL], callback)
 }
 
+func (em *EventManager[T]) StopListeningForAll() {
+	em.listeners[CONSUME_ALL] = []Callback[T]{}
+}
+
 func (em *EventManager[T]) AddListener(event string, callback Callback[T]) {
 	em.listeners[event] = append(em.listeners[event], callback)
 }

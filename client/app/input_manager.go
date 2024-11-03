@@ -27,11 +27,16 @@ func CreateInputManager() *InputManager {
 	}
 }
 
+func (im *InputManager) AddListener(event string, callback Callback[KeyboardInput]) {
+	im.eventManager.AddListener(event, callback)
+}
+
 func (im *InputManager) ReadKey() (rune, keyboard.Key, error) {
 	char, key, err := keyboard.GetKey()
 	return char, key, err
 }
 
+// @TODO: Find a way to reduce this code duplication
 func (im *InputManager) AddCharListener(char rune, callback Callback[KeyboardInput]) {
 	im.eventManager.AddListener(string(char), callback)
 }
@@ -40,8 +45,12 @@ func (im *InputManager) AddKeyListener(key keyboard.Key, callback Callback[Keybo
 	im.eventManager.AddListener(ToKey(key), callback)
 }
 
-func (im *InputManager) AddListener(event string, callback Callback[KeyboardInput]) {
-	im.eventManager.AddListener(event, callback)
+func (im *InputManager) RemoveCharListener(char rune) {
+	im.eventManager.RemoveListener(string(char))
+}
+
+func (im *InputManager) RemoveKeyListener(key keyboard.Key) {
+	im.eventManager.RemoveListener(ToKey(key))
 }
 
 func (im *InputManager) EmitCharEvent(char rune) {
@@ -56,10 +65,6 @@ func (im *InputManager) EmitKeyEvent(key keyboard.Key) {
 	})
 }
 
-func (im *InputManager) RemoveCharListener(char rune) {
-	im.eventManager.RemoveListener(string(char))
-}
-
 func (im *InputManager) EmitInput(char rune) {
 	if im.eventManager.HasListener(CONSUME_ALL) {
 		im.eventManager.EmitEvent(CONSUME_ALL, KeyboardInput{
@@ -72,6 +77,6 @@ func (im *InputManager) ListenForAll(callback Callback[KeyboardInput]) {
 	im.eventManager.AddListener(CONSUME_ALL, callback)
 }
 
-func (im *InputManager) RemoveKeyListener(key keyboard.Key) {
-	im.eventManager.RemoveListener(ToKey(key))
+func (im *InputManager) StopListeningForAll() {
+	im.eventManager.StopListeningForAll()
 }

@@ -9,11 +9,11 @@ type MainMenuScreen struct{}
 func (m *MainMenuScreen) Render() {
 	fmt.Println("Main Menu")
 	fmt.Println("1. Join Game")
-	fmt.Println("2. Host Game")
+	fmt.Println("-- 2. Host Game")
 }
 
 func (m *MainMenuScreen) Mount(game *Game) {
-	game.inputManager.AddCharListener('1', func(e InputManagerEvent) {
+	game.inputManager.AddCharListener('1', func(e Event[KeyboardInput]) {
 		game.ChangeScreen(JoinGame)
 	})
 }

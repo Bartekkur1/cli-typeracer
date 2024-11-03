@@ -21,7 +21,7 @@ func (j *JoinGameScreen) Mount(game *Game) {
 }
 
 func (j *JoinGameScreen) DisMount(game *Game) {
-
+	game.inputManager.StopListeningForAll()
 }
 
 func (j *JoinGameScreen) HandleEsc(game *Game) {
