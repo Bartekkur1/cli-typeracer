@@ -1,3 +1,5 @@
+github.com/bartekkur1/cli-typeracer/contract v0.0.0-20241103100846-385e3ff2dd01 h1:c+GK0q9IaxWrPJCofe/0bzB9mNZGzD5lCAA+u7Y7Gik=
+github.com/bartekkur1/cli-typeracer/contract v0.0.0-20241103100846-385e3ff2dd01/go.mod h1:mGsxhTW0NgocVKqiPe6rAaSluW7CL9XNRFDqILfdiJw=
 github.com/eiannone/keyboard v0.0.0-20220611211555-0d226195f203 h1:XBBHcIb256gUJtLmY22n99HaZTz+r2Z51xUPi01m3wg=
 github.com/eiannone/keyboard v0.0.0-20220611211555-0d226195f203/go.mod h1:E1jcSv8FaEny+OP/5k9UxZVw9YFWGj7eI4KR/iOBqCg=
 github.com/gorilla/websocket v1.5.3 h1:saDtZ6Pbx/0u+bgYQ3q96pZgCzfhKXGPqt7kZ72aNNg=
