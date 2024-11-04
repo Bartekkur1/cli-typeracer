@@ -6,4 +6,5 @@ var gameScreens = map[GameState]Screen{
 	JoinGame:  &JoinGameScreen{},
 	HostGame:  &HostGameScreen{},
 	GameLobby: &GameLobbyScreen{},
+	Race:      &RaceScreen{},
 }

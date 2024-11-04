@@ -2,6 +2,7 @@ package app
 
 import (
 	"fmt"
+	"time"
 
 	"github.com/bartekkur1/cli-typeracer/contract/communication"
 )
@@ -11,26 +12,29 @@ type GameLobbyScreen struct {
 	opponentReady bool
 	hostingGame   bool
 	gameStarting  bool
+	startDate     time.Time
 }
 
 func (j *GameLobbyScreen) Render() {
 	fmt.Printf("Game Lobby Screen\n")
 
 	if j.gameStarting {
-		fmt.Printf("Game starts in \n")
+		if !time.Now().After(j.startDate) {
+			fmt.Printf("Game starts in %s\n", time.Until(j.startDate).String())
+		}
 	} else {
 		fmt.Printf("Press 'r' to ready up\n")
 
 		if j.ready {
-			fmt.Printf("You are ready\n")
+			fmt.Printf("You are \t ready\n")
 		} else {
-			fmt.Printf("You are not ready\n")
+			fmt.Printf("You are \t not ready\n")
 		}
 
 		if j.opponentReady {
-			fmt.Printf("Opponent is ready\n")
+			fmt.Printf("Opponent \t is ready\n")
 		} else {
-			fmt.Printf("Opponent is not ready\n")
+			fmt.Printf("Opponent \t is not ready\n")
 		}
 
 		if j.ready && j.opponentReady && j.hostingGame {
@@ -40,6 +44,9 @@ func (j *GameLobbyScreen) Render() {
 }
 
 func (j *GameLobbyScreen) Init(game *Game) {
+	j.ready = false
+	j.opponentReady = false
+	j.gameStarting = false
 	j.hostingGame = game.store.hostingGame
 }
 
@@ -108,6 +115,13 @@ func (j *GameLobbyScreen) GetNetworkHandlers(game *Game) []NetworkHandler {
 			event: communication.GameStarting,
 			callback: func(e Event[communication.Message]) {
 				j.gameStarting = true
+				j.startDate = time.Now().Add(5 * time.Second)
+			},
+		},
+		{
+			event: communication.GameStarted,
+			callback: func(e Event[communication.Message]) {
+				game.ChangeScreen(Race)
 			},
 		},
 	}

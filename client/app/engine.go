@@ -19,6 +19,7 @@ const (
 	JoinGame
 	HostGame
 	GameLobby
+	Race
 )
 
 type GameStorage struct {
