@@ -23,10 +23,11 @@ const (
 )
 
 type GameStorage struct {
-	exit        bool
-	playerId    string
-	inviteToken string
-	hostingGame bool
+	exit         bool
+	playerId     string
+	inviteToken  string
+	hostingGame  bool
+	errorMessage string
 }
 
 type Game struct {

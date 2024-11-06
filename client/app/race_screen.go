@@ -20,7 +20,11 @@ func (r *RaceScreen) Render() {
 			fmt.Printf("\033[32m%c\033[0m", c)
 		} else if i == r.cursor {
 			// Print in red
-			fmt.Printf("\033[31m%c\033[0m", c)
+			if c == ' ' {
+				fmt.Printf("\033[31m▓\033[0m")
+			} else {
+				fmt.Printf("\033[31m%c\033[0m", c)
+			}
 		} else {
 			// Print in default
 			fmt.Printf("%c", c)
@@ -64,12 +68,14 @@ func (r *RaceScreen) GetNetworkHandlers(game *Game) []NetworkHandler {
 		{
 			event: communication.PlayerLeft,
 			callback: func(e Event[communication.Message]) {
+				game.store.errorMessage = "Player left the game!"
 				game.ChangeScreen(HostGame)
 			},
 		},
 		{
 			event: communication.GameClosed,
 			callback: func(e Event[communication.Message]) {
+				game.store.errorMessage = "Game closed!"
 				game.ChangeScreen(MainMenu)
 			},
 		},

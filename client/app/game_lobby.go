@@ -9,6 +9,7 @@ import (
 
 type GameLobbyScreen struct {
 	ready         bool
+	opponentJoin  bool
 	opponentReady bool
 	hostingGame   bool
 	gameStarting  bool
@@ -23,22 +24,27 @@ func (j *GameLobbyScreen) Render() {
 			fmt.Printf("Game starts in %s\n", time.Until(j.startDate).String())
 		}
 	} else {
-		fmt.Printf("Press 'r' to ready up\n")
 
-		if j.ready {
-			fmt.Printf("You are \t ready\n")
+		if j.hostingGame && !j.opponentJoin {
+			fmt.Printf("Waiting for opponent to join\n")
 		} else {
-			fmt.Printf("You are \t not ready\n")
-		}
+			fmt.Printf("Press 'r' to ready up\n")
 
-		if j.opponentReady {
-			fmt.Printf("Opponent \t is ready\n")
-		} else {
-			fmt.Printf("Opponent \t is not ready\n")
-		}
+			if j.ready {
+				fmt.Printf("You are \t ready\n")
+			} else {
+				fmt.Printf("You are \t not ready\n")
+			}
 
-		if j.ready && j.opponentReady && j.hostingGame {
-			fmt.Printf("Press 's' to start the game\n")
+			if j.opponentReady {
+				fmt.Printf("Opponent \t is ready\n")
+			} else {
+				fmt.Printf("Opponent \t is not ready\n")
+			}
+
+			if j.ready && j.opponentReady && j.hostingGame {
+				fmt.Printf("Press 's' to start the game\n")
+			}
 		}
 	}
 }
@@ -46,6 +52,7 @@ func (j *GameLobbyScreen) Render() {
 func (j *GameLobbyScreen) Init(game *Game) {
 	j.ready = false
 	j.opponentReady = false
+	j.opponentJoin = false
 	j.gameStarting = false
 	j.hostingGame = game.store.hostingGame
 }
@@ -84,14 +91,24 @@ func (j *GameLobbyScreen) GetInputHandlers(game *Game) []InputHandler {
 func (j *GameLobbyScreen) GetNetworkHandlers(game *Game) []NetworkHandler {
 	return []NetworkHandler{
 		{
+			event: communication.PlayerJoined,
+			callback: func(e Event[communication.Message]) {
+				// Why this doesnt work
+				j.opponentJoin = true
+			},
+		},
+		{
 			event: communication.PlayerLeft,
 			callback: func(e Event[communication.Message]) {
-				game.ChangeScreen(MainMenu)
+				game.store.errorMessage = "Opponent left the game"
+				j.opponentJoin = false
+				// game.ChangeScreen(MainMenu)
 			},
 		},
 		{
 			event: communication.GameClosed,
 			callback: func(e Event[communication.Message]) {
+				game.store.errorMessage = "Game was closed"
 				game.ChangeScreen(MainMenu)
 			},
 		},

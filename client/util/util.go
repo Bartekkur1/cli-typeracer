@@ -1,6 +1,7 @@
 package util
 
 import (
+	"fmt"
 	"os"
 )
 
@@ -14,4 +15,8 @@ func ReadFile(fileId int) string {
 		panic(err)
 	}
 	return string(data)
+}
+
+func SetTerminalSize(width, height int) {
+	fmt.Printf("\x1b[8;%d;%dt", height, width)
 }

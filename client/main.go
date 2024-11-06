@@ -5,6 +5,7 @@ import (
 )
 
 func main() {
+	// util.SetTerminalSize(100, 50)
 	game := app.CreateGame()
 	game.Run()
 }
