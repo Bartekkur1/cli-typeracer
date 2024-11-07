@@ -19,8 +19,10 @@ type Player struct {
 }
 
 type Game struct {
-	Id       string
-	State    GameState
-	Owner    *Player
-	Opponent *Player
+	Id               string
+	State            GameState
+	Owner            *Player
+	Opponent         *Player
+	OwnerFinished    bool
+	OpponentFinished bool
 }

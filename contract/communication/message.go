@@ -3,6 +3,8 @@ package communication
 import "encoding/json"
 
 type Message struct {
+	// @TODO: Is this really needed? Review possibility of removing it/moving it to headers
+	// Feels like thats trashing the payload, useless information
 	PlayerId string  `json:"playerId"`
 	Command  Command `json:"command"`
 	Content  string  `json:"content"`
@@ -32,8 +34,12 @@ const (
 	StartGame    Command = "START_GAME"
 	GameStarting Command = "GAME_STARTING"
 	GameStarted  Command = "GAME_STARTED"
+	GameFinished Command = "GAME_FINISHED"
 
 	GameClosed Command = "GAME_CLOSED"
+
+	InputProgress Command = "INPUT_PROGRESS"
+	InputFinished Command = "INPUT_FINISHED"
 
 	ACK Command = "ACK"
 )
