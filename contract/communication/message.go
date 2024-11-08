@@ -39,7 +39,6 @@ const (
 	GameClosed Command = "GAME_CLOSED"
 
 	InputProgress Command = "INPUT_PROGRESS"
-	InputFinished Command = "INPUT_FINISHED"
 
 	ACK Command = "ACK"
 )

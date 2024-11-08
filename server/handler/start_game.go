@@ -12,7 +12,6 @@ import (
 )
 
 func HandleStartGame(message *communication.Message) (communication.Message, error) {
-
 	game, err := state.StartGame(message.PlayerId)
 	if err != nil {
 		return communication.NewMessage(communication.Error, message.PlayerId, err.Error()), err

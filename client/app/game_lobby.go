@@ -7,52 +7,61 @@ import (
 	"github.com/bartekkur1/cli-typeracer/contract/communication"
 )
 
+// Screen Flow:
+// 1. Waiting for opponent
+// 2. Ready check
+// 3. Game starting countdown
+
 type GameLobbyScreen struct {
-	ready         bool
-	opponentJoin  bool
-	opponentReady bool
-	hostingGame   bool
-	gameStarting  bool
-	startDate     time.Time
+	ready         bool      // Game owner ready?
+	opponentReady bool      // Have opponent sent ready check
+	hostingGame   bool      // Is player hosting the game
+	gameStarting  bool      // Is game starting
+	startDate     time.Time // Start date of the game
+}
+
+// Renders the game starting countdown
+func renderGameStarting(j *GameLobbyScreen) {
+	if j.gameStarting {
+		if !time.Now().After(j.startDate) {
+			fmt.Printf("Game starts in %s\n", time.Until(j.startDate).String())
+		}
+	}
+}
+
+// Renders the ready check
+func renderReadyCheck(j *GameLobbyScreen) {
+	if !j.gameStarting {
+		fmt.Printf("Press 'r' to ready up\n")
+
+		if j.ready {
+			fmt.Printf("You are \t ready\n")
+		} else {
+			fmt.Printf("You are \t not ready\n")
+		}
+
+		if j.opponentReady {
+			fmt.Printf("Opponent \t is ready\n")
+		} else {
+			fmt.Printf("Opponent \t is not ready\n")
+		}
+
+		if j.ready && j.opponentReady && j.hostingGame {
+			fmt.Printf("Press 's' to start the game\n")
+		}
+	}
 }
 
 func (j *GameLobbyScreen) Render() {
 	fmt.Printf("Game Lobby Screen\n")
 
-	if j.gameStarting {
-		if !time.Now().After(j.startDate) {
-			fmt.Printf("Game starts in %s\n", time.Until(j.startDate).String())
-		}
-	} else {
-
-		if j.hostingGame && !j.opponentJoin {
-			fmt.Printf("Waiting for opponent to join\n")
-		} else {
-			fmt.Printf("Press 'r' to ready up\n")
-
-			if j.ready {
-				fmt.Printf("You are \t ready\n")
-			} else {
-				fmt.Printf("You are \t not ready\n")
-			}
-
-			if j.opponentReady {
-				fmt.Printf("Opponent \t is ready\n")
-			} else {
-				fmt.Printf("Opponent \t is not ready\n")
-			}
-
-			if j.ready && j.opponentReady && j.hostingGame {
-				fmt.Printf("Press 's' to start the game\n")
-			}
-		}
-	}
+	renderGameStarting(j)
+	renderReadyCheck(j)
 }
 
 func (j *GameLobbyScreen) Init(game *Game) {
 	j.ready = false
 	j.opponentReady = false
-	j.opponentJoin = false
 	j.gameStarting = false
 	j.hostingGame = game.store.hostingGame
 }
@@ -91,18 +100,10 @@ func (j *GameLobbyScreen) GetInputHandlers(game *Game) []InputHandler {
 func (j *GameLobbyScreen) GetNetworkHandlers(game *Game) []NetworkHandler {
 	return []NetworkHandler{
 		{
-			event: communication.PlayerJoined,
-			callback: func(e Event[communication.Message]) {
-				// Why this doesnt work
-				j.opponentJoin = true
-			},
-		},
-		{
 			event: communication.PlayerLeft,
 			callback: func(e Event[communication.Message]) {
 				game.store.errorMessage = "Opponent left the game"
-				j.opponentJoin = false
-				// game.ChangeScreen(MainMenu)
+				game.ChangeScreen(MainMenu)
 			},
 		},
 		{

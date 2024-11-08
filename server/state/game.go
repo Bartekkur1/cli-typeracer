@@ -25,4 +25,5 @@ type Game struct {
 	Opponent         *Player
 	OwnerFinished    bool
 	OpponentFinished bool
+	Winner           *Player
 }

@@ -57,6 +57,11 @@ func PlayerReady(playerId string, ready bool) (*Game, error) {
 
 	player.Ready = ready
 	log.Println("Player", playerId, "is ready:", ready)
+
+	if game.Owner.Ready && game.Opponent.Ready {
+		game.State = Ready
+	}
+
 	return game, nil
 }
 
@@ -81,6 +86,8 @@ func StartGame(hostId string) (*Game, error) {
 	}
 
 	game.State = Running
+	game.OwnerFinished = false
+	game.OpponentFinished = false
 	return game, nil
 }
 
@@ -175,7 +182,6 @@ func JoinGame(gameId string, playerId string) (*Game, error) {
 		return nil, errors.New("game not found")
 	}
 	game.Opponent = player
-	game.State = Ready
 	player.GameId = gameId
 	return game, nil
 }

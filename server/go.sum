@@ -1,5 +1,7 @@
 github.com/bartekkur1/cli-typeracer/contract v0.0.0-20241029192951-6e1e3514aa6f h1:xnNmMqJzyfPdpSpsGqVIFQpW3gD7YBKriVIBh3R78wU=
 github.com/bartekkur1/cli-typeracer/contract v0.0.0-20241029192951-6e1e3514aa6f/go.mod h1:mGsxhTW0NgocVKqiPe6rAaSluW7CL9XNRFDqILfdiJw=
+github.com/bartekkur1/cli-typeracer/contract v0.0.0-20241107215036-ee0c3f8d1821 h1:8iDQoTJ5SpNKVwEb/ebCpyc26c8sgHLTMNjFDPy1SNs=
+github.com/bartekkur1/cli-typeracer/contract v0.0.0-20241107215036-ee0c3f8d1821/go.mod h1:mGsxhTW0NgocVKqiPe6rAaSluW7CL9XNRFDqILfdiJw=
 github.com/google/uuid v1.6.0 h1:NIvaJDMOsjHA8n1jAhLSgzrAzy1Hgr+hNrb57e+94F0=
 github.com/google/uuid v1.6.0/go.mod h1:TIyPZe4MgqvfeYDBFedMoGGpEw/LqOeaOT+nhxU+yHo=
 github.com/gorilla/websocket v1.5.3 h1:saDtZ6Pbx/0u+bgYQ3q96pZgCzfhKXGPqt7kZ72aNNg=

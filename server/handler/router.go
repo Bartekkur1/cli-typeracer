@@ -16,4 +16,5 @@ var CommandHandlers = map[communication.Command]Handler{
 	communication.PlayerNotReady: HandleReadyCheck,
 	communication.StartGame:      HandleStartGame,
 	communication.PlayerLeave:    HandlePlayerLeaveGame,
+	communication.InputProgress:  HandleInputHandler,
 }
