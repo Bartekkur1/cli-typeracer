@@ -33,7 +33,7 @@ type GameStorage struct {
 type Game struct {
 	inputManager   *InputManager
 	networkManager *NetworkManager
-	state          GameState
+	stateStack     []GameState
 	screen         Screen
 	store          GameStorage
 }
@@ -99,7 +99,22 @@ func (game *Game) StartServerConnection() {
 	go game.ListenForNetwork()
 }
 
-func (game *Game) ChangeScreen(state GameState) {
+func (game *Game) PushScreen(state GameState) {
+	game.stateStack = append(game.stateStack, state)
+	game.InitializeScreen()
+}
+
+func (game *Game) PopScreen() {
+	game.stateStack = game.stateStack[:len(game.stateStack)-1]
+	game.InitializeScreen()
+}
+
+func (game *Game) InitializeScreen() {
+	if len(game.stateStack) == 0 {
+		return
+	}
+
+	state := game.stateStack[len(game.stateStack)-1]
 	newScreen := gameScreens[state]
 	if game.screen != nil {
 		game.inputManager.RemoveHandlers(game.screen.GetInputHandlers(game))
@@ -109,7 +124,6 @@ func (game *Game) ChangeScreen(state GameState) {
 	game.networkManager.RegisterHandlers(newScreen.GetNetworkHandlers(game))
 	newScreen.Init(game)
 	game.screen = newScreen
-	game.state = state
 }
 
 func (game *Game) SendMessage(command communication.Command, content string) {
@@ -124,10 +138,13 @@ func (game *Game) Run() {
 	// @TODO: Somehow disconnect from the server when the game is closed and close keyboard input
 	go game.StartInputManager()
 	game.StartServerConnection()
-	game.ChangeScreen(Register)
+	game.PushScreen(Register)
 
 	game.inputManager.AddKeyListener(keyboard.KeyEsc, func(e InputManagerEvent) {
 		game.screen.HandleEsc(game)
+		if len(game.stateStack) == 0 {
+			game.Exit()
+		}
 	})
 
 	for {

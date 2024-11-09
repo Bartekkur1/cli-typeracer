@@ -35,7 +35,8 @@ func (s *RegisterScreen) GetInputHandlers(game *Game) []InputHandler {
 			event: ToKey(keyboard.KeySpace),
 			callback: func(e Event[KeyboardInput]) {
 				if s.registered {
-					game.ChangeScreen(MainMenu)
+					game.PopScreen()
+					game.PushScreen(MainMenu)
 				}
 			},
 		},

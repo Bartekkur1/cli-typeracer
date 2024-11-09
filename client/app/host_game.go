@@ -28,7 +28,7 @@ func (j *HostGameScreen) Init(game *Game) {
 
 func (j *HostGameScreen) HandleEsc(game *Game) {
 	game.SendMessage(communication.PlayerLeave, "")
-	game.ChangeScreen(MainMenu)
+	game.PopScreen()
 }
 
 func (j *HostGameScreen) GetInputHandlers(game *Game) []InputHandler {
@@ -46,7 +46,7 @@ func (j *HostGameScreen) GetNetworkHandlers(game *Game) []NetworkHandler {
 		{
 			event: communication.PlayerJoined,
 			callback: func(e Event[communication.Message]) {
-				game.ChangeScreen(GameLobby)
+				game.PushScreen(GameLobby)
 			},
 		},
 	}

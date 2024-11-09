@@ -68,7 +68,9 @@ func (j *GameLobbyScreen) Init(game *Game) {
 
 func (j *GameLobbyScreen) HandleEsc(game *Game) {
 	game.SendMessage(communication.PlayerLeave, "")
-	game.ChangeScreen(MainMenu)
+	// Pop the game host screen and the game lobby screen
+	game.PopScreen()
+	game.PopScreen()
 }
 
 func (j *GameLobbyScreen) GetInputHandlers(game *Game) []InputHandler {
@@ -103,14 +105,14 @@ func (j *GameLobbyScreen) GetNetworkHandlers(game *Game) []NetworkHandler {
 			event: communication.PlayerLeft,
 			callback: func(e Event[communication.Message]) {
 				game.store.errorMessage = "Opponent left the game"
-				game.ChangeScreen(MainMenu)
+				game.PopScreen()
 			},
 		},
 		{
 			event: communication.GameClosed,
 			callback: func(e Event[communication.Message]) {
 				game.store.errorMessage = "Game was closed"
-				game.ChangeScreen(MainMenu)
+				game.PopScreen()
 			},
 		},
 		{
@@ -139,7 +141,7 @@ func (j *GameLobbyScreen) GetNetworkHandlers(game *Game) []NetworkHandler {
 		{
 			event: communication.GameStarted,
 			callback: func(e Event[communication.Message]) {
-				game.ChangeScreen(Race)
+				game.PushScreen(Race)
 			},
 		},
 	}

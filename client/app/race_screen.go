@@ -77,7 +77,7 @@ func (r *RaceScreen) Init(game *Game) {
 
 func (r *RaceScreen) HandleEsc(game *Game) {
 	game.SendMessage(communication.PlayerLeave, "")
-	game.ChangeScreen(MainMenu)
+	game.PopScreen()
 }
 
 func (r *RaceScreen) GetInputHandlers(game *Game) []InputHandler {
@@ -101,7 +101,7 @@ func (r *RaceScreen) GetInputHandlers(game *Game) []InputHandler {
 					r.cursor++
 				} else if r.finished {
 					// @TODO: Fix this, should be lobby but it's not working
-					game.ChangeScreen(GameLobby)
+					game.PopScreen()
 				}
 			},
 		},
@@ -114,14 +114,14 @@ func (r *RaceScreen) GetNetworkHandlers(game *Game) []NetworkHandler {
 			event: communication.PlayerLeft,
 			callback: func(e Event[communication.Message]) {
 				game.store.errorMessage = "Player left the game!"
-				game.ChangeScreen(HostGame)
+				game.PopScreen()
 			},
 		},
 		{
 			event: communication.GameClosed,
 			callback: func(e Event[communication.Message]) {
 				game.store.errorMessage = "Game closed!"
-				game.ChangeScreen(MainMenu)
+				game.PopScreen()
 			},
 		},
 		{

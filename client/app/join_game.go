@@ -27,7 +27,7 @@ func (j *JoinGameScreen) Init(game *Game) {
 }
 
 func (j *JoinGameScreen) HandleEsc(game *Game) {
-	game.ChangeScreen(MainMenu)
+	game.PopScreen()
 }
 
 func (j *JoinGameScreen) GetInputHandlers(game *Game) []InputHandler {
@@ -69,7 +69,8 @@ func (j *JoinGameScreen) GetNetworkHandlers(game *Game) []NetworkHandler {
 			event: communication.GameJoined,
 			callback: func(e Event[communication.Message]) {
 				game.store.inviteToken = j.inviteCode
-				game.ChangeScreen(GameLobby)
+				game.PopScreen()
+				game.PushScreen(GameLobby)
 			},
 		},
 	}

@@ -20,7 +20,7 @@ func (m *MainMenuScreen) Init(game *Game) {
 }
 
 func (m *MainMenuScreen) HandleEsc(game *Game) {
-	game.Exit()
+	game.PopScreen()
 }
 
 func (m *MainMenuScreen) GetInputHandlers(game *Game) []InputHandler {
@@ -28,13 +28,13 @@ func (m *MainMenuScreen) GetInputHandlers(game *Game) []InputHandler {
 		{
 			event: string('1'),
 			callback: func(e Event[KeyboardInput]) {
-				game.ChangeScreen(JoinGame)
+				game.PushScreen(JoinGame)
 			},
 		},
 		{
 			event: string('2'),
 			callback: func(e Event[KeyboardInput]) {
-				game.ChangeScreen(HostGame)
+				game.PushScreen(HostGame)
 			},
 		},
 	}
