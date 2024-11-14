@@ -4,8 +4,8 @@ package app
 type Screen interface {
 	Render()
 	Init(game *Game)
-	GetInputHandlers(game *Game) []InputHandler
-	GetNetworkHandlers(game *Game) []NetworkHandler
-	// DisMount(game *Game)
+	InitOnce(game *Game)
+	GetInputHandlers() []InputHandler
+	GetNetworkHandlers() []NetworkHandler
 	HandleEsc(game *Game)
 }

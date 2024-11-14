@@ -5,7 +5,9 @@ import (
 )
 
 type MainMenuScreen struct {
-	playerId *string
+	playerId        *string
+	inputHandlers   []InputHandler
+	networkHandlers []NetworkHandler
 }
 
 func (m *MainMenuScreen) Render() {
@@ -19,12 +21,8 @@ func (m *MainMenuScreen) Init(game *Game) {
 	m.playerId = &game.store.playerId
 }
 
-func (m *MainMenuScreen) HandleEsc(game *Game) {
-	game.PopScreen()
-}
-
-func (m *MainMenuScreen) GetInputHandlers(game *Game) []InputHandler {
-	return []InputHandler{
+func (m *MainMenuScreen) InitOnce(game *Game) {
+	m.inputHandlers = []InputHandler{
 		{
 			event: string('1'),
 			callback: func(e Event[KeyboardInput]) {
@@ -40,6 +38,14 @@ func (m *MainMenuScreen) GetInputHandlers(game *Game) []InputHandler {
 	}
 }
 
-func (m *MainMenuScreen) GetNetworkHandlers(game *Game) []NetworkHandler {
-	return []NetworkHandler{}
+func (m *MainMenuScreen) HandleEsc(game *Game) {
+	game.PopScreen()
+}
+
+func (m *MainMenuScreen) GetInputHandlers() []InputHandler {
+	return m.inputHandlers
+}
+
+func (m *MainMenuScreen) GetNetworkHandlers() []NetworkHandler {
+	return m.networkHandlers
 }

@@ -7,4 +7,5 @@ var gameScreens = map[GameState]Screen{
 	HostGame:  &HostGameScreen{},
 	GameLobby: &GameLobbyScreen{},
 	Race:      &RaceScreen{},
+	Error:     &ErrorScreen{},
 }

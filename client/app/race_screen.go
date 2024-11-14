@@ -18,6 +18,8 @@ type RaceScreen struct {
 	cursor           int
 	win              bool
 	finished         bool
+	inputHandlers    []InputHandler
+	networkHandlers  []NetworkHandler
 }
 
 // Renders give progress in the console
@@ -77,11 +79,11 @@ func (r *RaceScreen) Init(game *Game) {
 
 func (r *RaceScreen) HandleEsc(game *Game) {
 	game.SendMessage(communication.PlayerLeave, "")
-	game.PopScreen()
+	game.ForceMainMenu()
 }
 
-func (r *RaceScreen) GetInputHandlers(game *Game) []InputHandler {
-	return []InputHandler{
+func (r *RaceScreen) InitOnce(game *Game) {
+	r.inputHandlers = []InputHandler{
 		{
 			event: CONSUME_ALL,
 			callback: func(e Event[KeyboardInput]) {
@@ -106,22 +108,24 @@ func (r *RaceScreen) GetInputHandlers(game *Game) []InputHandler {
 			},
 		},
 	}
-}
 
-func (r *RaceScreen) GetNetworkHandlers(game *Game) []NetworkHandler {
-	return []NetworkHandler{
+	r.networkHandlers = []NetworkHandler{
 		{
 			event: communication.PlayerLeft,
 			callback: func(e Event[communication.Message]) {
-				game.store.errorMessage = "Player left the game!"
-				game.PopScreen()
+				if game.store.hostingGame {
+					game.store.errorMessage = "Player left the game!"
+					game.ForceError()
+				}
 			},
 		},
 		{
 			event: communication.GameClosed,
 			callback: func(e Event[communication.Message]) {
-				game.store.errorMessage = "Game closed!"
-				game.PopScreen()
+				if !game.store.hostingGame {
+					game.store.errorMessage = "Game closed!"
+					game.ForceError()
+				}
 			},
 		},
 		{
@@ -141,4 +145,12 @@ func (r *RaceScreen) GetNetworkHandlers(game *Game) []NetworkHandler {
 			},
 		},
 	}
+}
+
+func (r *RaceScreen) GetInputHandlers() []InputHandler {
+	return r.inputHandlers
+}
+
+func (r *RaceScreen) GetNetworkHandlers() []NetworkHandler {
+	return r.networkHandlers
 }

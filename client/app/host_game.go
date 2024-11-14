@@ -7,13 +7,15 @@ import (
 )
 
 type HostGameScreen struct {
-	inviteCode *string
+	inviteCode      *string
+	inputHandlers   []InputHandler
+	networkHandlers []NetworkHandler
 }
 
-func (j *HostGameScreen) Render() {
+func (h *HostGameScreen) Render() {
 	fmt.Println("Host Game")
-	if j.inviteCode != nil {
-		fmt.Printf("Invite Code: %s\n", *j.inviteCode)
+	if h.inviteCode != nil {
+		fmt.Printf("Invite Code: %s\n", *h.inviteCode)
 	} else {
 		fmt.Println("Creating game...")
 	}
@@ -21,26 +23,18 @@ func (j *HostGameScreen) Render() {
 	fmt.Println("Waiting for players to join...")
 }
 
-func (j *HostGameScreen) Init(game *Game) {
+func (h *HostGameScreen) Init(game *Game) {
 	game.store.hostingGame = true
 	game.SendMessage(communication.CreateGame, "")
 }
 
-func (j *HostGameScreen) HandleEsc(game *Game) {
-	game.SendMessage(communication.PlayerLeave, "")
-	game.PopScreen()
-}
-
-func (j *HostGameScreen) GetInputHandlers(game *Game) []InputHandler {
-	return []InputHandler{}
-}
-
-func (j *HostGameScreen) GetNetworkHandlers(game *Game) []NetworkHandler {
-	return []NetworkHandler{
+func (h *HostGameScreen) InitOnce(game *Game) {
+	h.inputHandlers = []InputHandler{}
+	h.networkHandlers = []NetworkHandler{
 		{
 			event: communication.GameCreated,
 			callback: func(e Event[communication.Message]) {
-				j.inviteCode = &e.Data.Content
+				h.inviteCode = &e.Data.Content
 			},
 		},
 		{
@@ -50,4 +44,17 @@ func (j *HostGameScreen) GetNetworkHandlers(game *Game) []NetworkHandler {
 			},
 		},
 	}
+}
+
+func (h *HostGameScreen) HandleEsc(game *Game) {
+	game.SendMessage(communication.PlayerLeave, "")
+	game.PopScreen()
+}
+
+func (h *HostGameScreen) GetInputHandlers() []InputHandler {
+	return h.inputHandlers
+}
+
+func (h *HostGameScreen) GetNetworkHandlers() []NetworkHandler {
+	return h.networkHandlers
 }

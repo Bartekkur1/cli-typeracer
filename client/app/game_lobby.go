@@ -13,11 +13,13 @@ import (
 // 3. Game starting countdown
 
 type GameLobbyScreen struct {
-	ready         bool      // Game owner ready?
-	opponentReady bool      // Have opponent sent ready check
-	hostingGame   bool      // Is player hosting the game
-	gameStarting  bool      // Is game starting
-	startDate     time.Time // Start date of the game
+	ready           bool      // Game owner ready?
+	opponentReady   bool      // Have opponent sent ready check
+	hostingGame     bool      // Is player hosting the game
+	gameStarting    bool      // Is game starting
+	startDate       time.Time // Start date of the game
+	inputHandlers   []InputHandler
+	networkHandlers []NetworkHandler
 }
 
 // Renders the game starting countdown
@@ -66,15 +68,8 @@ func (j *GameLobbyScreen) Init(game *Game) {
 	j.hostingGame = game.store.hostingGame
 }
 
-func (j *GameLobbyScreen) HandleEsc(game *Game) {
-	game.SendMessage(communication.PlayerLeave, "")
-	// Pop the game host screen and the game lobby screen
-	game.PopScreen()
-	game.PopScreen()
-}
-
-func (j *GameLobbyScreen) GetInputHandlers(game *Game) []InputHandler {
-	return []InputHandler{
+func (j *GameLobbyScreen) InitOnce(game *Game) {
+	j.inputHandlers = []InputHandler{
 		{
 			event: "r",
 			callback: func(e Event[KeyboardInput]) {
@@ -97,22 +92,21 @@ func (j *GameLobbyScreen) GetInputHandlers(game *Game) []InputHandler {
 			},
 		},
 	}
-}
-
-func (j *GameLobbyScreen) GetNetworkHandlers(game *Game) []NetworkHandler {
-	return []NetworkHandler{
+	j.networkHandlers = []NetworkHandler{
 		{
 			event: communication.PlayerLeft,
 			callback: func(e Event[communication.Message]) {
-				game.store.errorMessage = "Opponent left the game"
+				game.store.errorMessage = "Opponent left the game!"
 				game.PopScreen()
+				game.PushScreen(Error)
 			},
 		},
 		{
 			event: communication.GameClosed,
 			callback: func(e Event[communication.Message]) {
-				game.store.errorMessage = "Game was closed"
+				game.store.errorMessage = "Game was closed!"
 				game.PopScreen()
+				game.PushScreen(Error)
 			},
 		},
 		{
@@ -145,4 +139,19 @@ func (j *GameLobbyScreen) GetNetworkHandlers(game *Game) []NetworkHandler {
 			},
 		},
 	}
+}
+
+func (j *GameLobbyScreen) HandleEsc(game *Game) {
+	game.SendMessage(communication.PlayerLeave, "")
+	// Pop the game host screen and the game lobby screen
+	game.PopScreen()
+	game.PopScreen()
+}
+
+func (j *GameLobbyScreen) GetInputHandlers() []InputHandler {
+	return j.inputHandlers
+}
+
+func (j *GameLobbyScreen) GetNetworkHandlers() []NetworkHandler {
+	return j.networkHandlers
 }

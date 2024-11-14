@@ -8,30 +8,23 @@ import (
 )
 
 type JoinGameScreen struct {
-	inviteCode       string
-	joinErrorMessage string
+	inviteCode      string
+	inputHandlers   []InputHandler
+	networkHandlers []NetworkHandler
 }
 
 func (j *JoinGameScreen) Render() {
 	fmt.Println("Join Game")
-	if j.joinErrorMessage != "" {
-		fmt.Printf("Error: %s\n", j.joinErrorMessage)
-	}
 	fmt.Printf("Enter invite code: %s", j.inviteCode)
 }
 
 func (j *JoinGameScreen) Init(game *Game) {
 	j.inviteCode = ""
-	j.joinErrorMessage = ""
 	game.store.hostingGame = false
 }
 
-func (j *JoinGameScreen) HandleEsc(game *Game) {
-	game.PopScreen()
-}
-
-func (j *JoinGameScreen) GetInputHandlers(game *Game) []InputHandler {
-	return []InputHandler{
+func (j *JoinGameScreen) InitOnce(game *Game) {
+	j.inputHandlers = []InputHandler{
 		{
 			event: CONSUME_ALL,
 			callback: func(e Event[KeyboardInput]) {
@@ -55,14 +48,16 @@ func (j *JoinGameScreen) GetInputHandlers(game *Game) []InputHandler {
 			},
 		},
 	}
-}
-
-func (j *JoinGameScreen) GetNetworkHandlers(game *Game) []NetworkHandler {
-	return []NetworkHandler{
+	j.networkHandlers = []NetworkHandler{
 		{
 			event: communication.Error,
 			callback: func(e Event[communication.Message]) {
-				j.joinErrorMessage = e.Data.Content
+				if e.Data.Content == "game not found" {
+					game.store.errorMessage = "Game not found!"
+				} else {
+					game.store.errorMessage = "An error occurred!"
+				}
+				game.PushScreen(Error)
 			},
 		},
 		{
@@ -74,4 +69,16 @@ func (j *JoinGameScreen) GetNetworkHandlers(game *Game) []NetworkHandler {
 			},
 		},
 	}
+}
+
+func (j *JoinGameScreen) HandleEsc(game *Game) {
+	game.PopScreen()
+}
+
+func (j *JoinGameScreen) GetInputHandlers() []InputHandler {
+	return j.inputHandlers
+}
+
+func (j *JoinGameScreen) GetNetworkHandlers() []NetworkHandler {
+	return j.networkHandlers
 }

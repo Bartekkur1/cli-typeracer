@@ -8,7 +8,9 @@ import (
 )
 
 type RegisterScreen struct {
-	registered bool
+	registered     bool
+	inputHandler   []InputHandler
+	networkHandler []NetworkHandler
 }
 
 func (s *RegisterScreen) Render() {
@@ -25,26 +27,19 @@ func (s *RegisterScreen) Init(game *Game) {
 	game.SendMessage(communication.Welcome, "")
 }
 
-func (s *RegisterScreen) HandleEsc(game *Game) {
-	game.Exit()
-}
-
-func (s *RegisterScreen) GetInputHandlers(game *Game) []InputHandler {
-	return []InputHandler{
+func (s *RegisterScreen) InitOnce(game *Game) {
+	s.inputHandler = []InputHandler{
 		{
 			event: ToKey(keyboard.KeySpace),
 			callback: func(e Event[KeyboardInput]) {
 				if s.registered {
-					game.PopScreen()
-					game.PushScreen(MainMenu)
+					game.ForceMainMenu()
 				}
 			},
 		},
 	}
-}
 
-func (s *RegisterScreen) GetNetworkHandlers(game *Game) []NetworkHandler {
-	return []NetworkHandler{
+	s.networkHandler = []NetworkHandler{
 		{
 			event: communication.Welcome,
 			callback: func(e Event[communication.Message]) {
@@ -53,4 +48,16 @@ func (s *RegisterScreen) GetNetworkHandlers(game *Game) []NetworkHandler {
 			},
 		},
 	}
+}
+
+func (s *RegisterScreen) HandleEsc(game *Game) {
+	game.Exit()
+}
+
+func (s *RegisterScreen) GetInputHandlers() []InputHandler {
+	return s.inputHandler
+}
+
+func (s *RegisterScreen) GetNetworkHandlers() []NetworkHandler {
+	return s.networkHandler
 }

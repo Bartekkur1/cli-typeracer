@@ -20,6 +20,7 @@ const (
 	HostGame
 	GameLobby
 	Race
+	Error
 )
 
 type GameStorage struct {
@@ -87,12 +88,16 @@ func (game *Game) ListenForNetwork() {
 	}
 }
 
-// @TODO: Handle network connection failure
 func (game *Game) StartServerConnection() {
 	url := "ws://localhost:8080"
+	if os.Getenv("TR_WS_URL") != "" {
+		url = os.Getenv("TR_WS_URL")
+	}
 	conn, _, err := websocket.DefaultDialer.Dial(url, nil)
 	if err != nil {
-		panic("Error connecting to WebSocket server: " + err.Error())
+		fmt.Printf("Failed connecting to WebSocket server under %s URL!\n", url)
+		fmt.Println("Try overriding the server URL using the TR_WS_URL environment variable.")
+		os.Exit(1)
 	}
 
 	game.networkManager.SetConnection(conn)
@@ -101,6 +106,17 @@ func (game *Game) StartServerConnection() {
 
 func (game *Game) PushScreen(state GameState) {
 	game.stateStack = append(game.stateStack, state)
+	game.InitializeScreen()
+}
+
+// Displays an error screen and main menu in background
+func (game *Game) ForceError() {
+	game.stateStack = []GameState{MainMenu, Error}
+	game.InitializeScreen()
+}
+
+func (game *Game) ForceMainMenu() {
+	game.stateStack = []GameState{MainMenu}
 	game.InitializeScreen()
 }
 
@@ -115,13 +131,13 @@ func (game *Game) InitializeScreen() {
 	}
 
 	state := game.stateStack[len(game.stateStack)-1]
-	newScreen := gameScreens[state]
 	if game.screen != nil {
-		game.inputManager.RemoveHandlers(game.screen.GetInputHandlers(game))
-		game.networkManager.RemoveHandlers(game.screen.GetNetworkHandlers(game))
+		game.inputManager.RemoveHandlers(game.screen.GetInputHandlers())
+		game.networkManager.RemoveHandlers(game.screen.GetNetworkHandlers())
 	}
-	game.inputManager.RegisterHandlers(newScreen.GetInputHandlers(game))
-	game.networkManager.RegisterHandlers(newScreen.GetNetworkHandlers(game))
+	newScreen := gameScreens[state]
+	game.inputManager.RegisterHandlers(newScreen.GetInputHandlers())
+	game.networkManager.RegisterHandlers(newScreen.GetNetworkHandlers())
 	newScreen.Init(game)
 	game.screen = newScreen
 }
@@ -134,10 +150,17 @@ func (game *Game) SendMessage(command communication.Command, content string) {
 	game.networkManager.SendMessage(message)
 }
 
+func (game *Game) InitializeScreens() {
+	for _, screen := range gameScreens {
+		screen.InitOnce(game)
+	}
+}
+
 func (game *Game) Run() {
 	// @TODO: Somehow disconnect from the server when the game is closed and close keyboard input
 	go game.StartInputManager()
 	game.StartServerConnection()
+	game.InitializeScreens()
 	game.PushScreen(Register)
 
 	game.inputManager.AddKeyListener(keyboard.KeyEsc, func(e InputManagerEvent) {
