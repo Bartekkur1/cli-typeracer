@@ -56,13 +56,14 @@ bun run test
 - [x] Joining Game
 - [x] Starting Game (Ready Check)
 - [x] Running Game (Live time preview of your opponent progress and stats)
-- [ ] Random text to race on
+- [x] Random text to race on
 - [x] Game Summary
 - [x] Replay
 
 ### Additional Features
 
 - [ ] Nick Change
+- [x] Render on change (rendering 60 fps is kinda laggy)
 - [x] Server URL Change (we will host single server somewhere but we won't hold you back from hosting your own). To change server URL use environment variable `TR_WS_URL`
 
 Each of these steps have to be integration tests covered and tested before checking out.
