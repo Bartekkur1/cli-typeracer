@@ -30,6 +30,8 @@ type GameStorage struct {
 	hostingGame  bool
 	errorMessage string
 	textNumber   int
+	shouldRender bool
+	lastRender   time.Time
 }
 
 type Game struct {
@@ -72,7 +74,7 @@ func (game *Game) StartInputManager() {
 		} else {
 			game.inputManager.EmitKeyEvent(key)
 		}
-
+		game.store.shouldRender = true
 	}
 }
 
@@ -86,6 +88,7 @@ func (game *Game) ListenForNetwork() {
 		}
 
 		game.networkManager.eventManager.EmitEvent(string(message.Command), message)
+		game.store.shouldRender = true
 	}
 }
 
@@ -162,6 +165,7 @@ func (game *Game) Run() {
 	go game.StartInputManager()
 	game.StartServerConnection()
 	game.InitializeScreens()
+	game.store.shouldRender = true
 	game.PushScreen(Register)
 
 	game.inputManager.AddKeyListener(keyboard.KeyEsc, func(e InputManagerEvent) {
@@ -176,10 +180,14 @@ func (game *Game) Run() {
 			game.Exit()
 		}
 
-		cli.ClearConsole()
-		game.screen.Render()
+		// Render if something changed or every second
+		if game.store.shouldRender || time.Since(game.store.lastRender) > time.Second {
+			cli.ClearConsole()
+			game.screen.Render()
+			game.store.shouldRender = false
+			game.store.lastRender = time.Now()
+		}
 		// 60 FPS?
 		time.Sleep(time.Second / 30)
-		// time.Sleep(time.Second)
 	}
 }
