@@ -26,7 +26,7 @@ type GameLobbyScreen struct {
 func renderGameStarting(j *GameLobbyScreen) {
 	if j.gameStarting {
 		if !time.Now().After(j.startDate) {
-			fmt.Printf("Game starts in %s\n", time.Until(j.startDate).String())
+			fmt.Printf("Game starts in %s\n", time.Until(j.startDate).Truncate(time.Second).String())
 		}
 	}
 }

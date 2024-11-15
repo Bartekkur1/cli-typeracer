@@ -51,17 +51,18 @@ bun run test
 ## **🛑 Project Status**
 
 - [x] Initial PoC's
-- [ ] Communication initialisation
-- [ ] Hosting Game
-- [ ] Joining Game
-- [ ] Starting Game (Ready Check)
-- [ ] Running Game (Live time preview of your opponent progress and stats)
-- [ ] Game Summary
-- [ ] Replay
+- [x] Communication initialisation
+- [x] Hosting Game
+- [x] Joining Game
+- [x] Starting Game (Ready Check)
+- [x] Running Game (Live time preview of your opponent progress and stats)
+- [ ] Random text to race on
+- [x] Game Summary
+- [x] Replay
 
 ### Additional Features
 
 - [ ] Nick Change
-- [ ] Server URL Change (we will host single server somewhere but we won't hold you back from hosting your own)
+- [x] Server URL Change (we will host single server somewhere but we won't hold you back from hosting your own). To change server URL use environment variable `TR_WS_URL`
 
 Each of these steps have to be integration tests covered and tested before checking out.
