@@ -29,6 +29,7 @@ type GameStorage struct {
 	inviteToken  string
 	hostingGame  bool
 	errorMessage string
+	textNumber   int
 }
 
 type Game struct {

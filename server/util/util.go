@@ -2,6 +2,7 @@ package util
 
 import (
 	"bytes"
+	"math/rand"
 
 	"github.com/bartekkur1/cli-typeracer/contract/communication"
 	"github.com/bartekkur1/cli-typeracer/server/state"
@@ -19,4 +20,8 @@ func SendPlayerMessage(player *state.Player, message communication.Message) {
 		return
 	}
 	player.Conn.WriteMessage(websocket.TextMessage, []byte(communication.MessageToBytes(&message)))
+}
+
+func RandomInt() int {
+	return rand.Intn(3) + 1
 }

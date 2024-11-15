@@ -70,7 +70,7 @@ func (r *RaceScreen) Render() {
 
 func (r *RaceScreen) Init(game *Game) {
 	// @TODO: get random file from server
-	r.text = util.ReadFile(1)
+	r.text = util.ReadFile(game.store.textNumber)
 	r.cursor = 0
 	r.progress = 0
 	r.finished = false

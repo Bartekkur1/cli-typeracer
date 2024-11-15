@@ -28,8 +28,9 @@ func HandleStartGame(message *communication.Message) (communication.Message, err
 			return
 		}
 		log.Printf("Game started for %s and %s", game.Owner.Id, game.Opponent.Id)
-		util.SendPlayerMessage(game.Owner, communication.NewMessage(communication.GameStarted, game.Owner.Id, ""))
-		util.SendPlayerMessage(game.Opponent, communication.NewMessage(communication.GameStarted, game.Owner.Id, ""))
+		textNumber := strconv.Itoa(util.RandomInt())
+		util.SendPlayerMessage(game.Owner, communication.NewMessage(communication.GameStarted, game.Owner.Id, textNumber))
+		util.SendPlayerMessage(game.Opponent, communication.NewMessage(communication.GameStarted, game.Owner.Id, textNumber))
 	})
 
 	return communication.NewMessage(communication.ACK, message.PlayerId, ""), nil

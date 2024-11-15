@@ -2,6 +2,7 @@ package app
 
 import (
 	"fmt"
+	"strconv"
 	"time"
 
 	"github.com/bartekkur1/cli-typeracer/contract/communication"
@@ -135,6 +136,15 @@ func (j *GameLobbyScreen) InitOnce(game *Game) {
 		{
 			event: communication.GameStarted,
 			callback: func(e Event[communication.Message]) {
+				textNumber, error := strconv.Atoi(e.Data.Content)
+				if error != nil {
+					game.store.errorMessage = "Failed to parse text number"
+					game.PopScreen()
+					game.PushScreen(Error)
+					return
+				} else {
+					game.store.textNumber = textNumber
+				}
 				game.PushScreen(Race)
 			},
 		},
